@@ -25,6 +25,11 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.9.1</version>
         </dependency>
+        <dependency>  <!-- Base de Datos -->
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>12.8.1.jre11</version>
+        </dependency>
     </dependencies>
 
     <build>
