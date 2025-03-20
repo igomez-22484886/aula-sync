@@ -1,19 +1,29 @@
-version: 'latest'
+version: '3.8'
 
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:latest
-    container_name: sqlserver_aula_sync
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: AULASYNC
+    restart: always
     ports:
       - "1433:1433"
     environment:
+      SA_PASSWORD: "c_hup@meLa1234"
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "MyStrongPassword123!"
-      MSSQL_PID: "Developer"
-    restart: always
     volumes:
       - sql_data:/var/opt/mssql
-      - ./scripts:/docker-entrypoint-initdb.d  # 🟢 Montar scripts SQL
+
+  db_init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d
+    command: >
+      /bin/bash -c "
+      sleep 20 && 
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U SA -P 'c_hup@meLa1234' -i /docker-entrypoint-initdb.d/init.sql
+      "
 
 volumes:
-  sql_data:
+  sql_data:
