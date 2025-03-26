@@ -1,3 +1,4 @@
+import model.repository.DockerManager;
 import model.repository.SQLServerConnection;
 import view.ConsoleView;
 
@@ -7,11 +8,12 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Main: Starting application...");
 
+        // Iniciar Docker y esperar hasta que esté listo
+        DockerManager.startDockerContainer();
+
         try (Connection conn = SQLServerConnection.getConnection()) {
             if (conn != null) {
                 System.out.println("Main: Database connection established.");
-
-                // Iniciar Vista de la Consola
                 ConsoleView consoleView = new ConsoleView();
                 consoleView.showMenu();
             } else {
