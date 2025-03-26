@@ -1,4 +1,5 @@
-import model.SQLServerConnection;
+import model.repository.SQLServerConnection;
+import view.ConsoleView;
 
 import java.sql.Connection;
 
@@ -9,6 +10,10 @@ public class Main {
         try (Connection conn = SQLServerConnection.getConnection()) {
             if (conn != null) {
                 System.out.println("Main: Database connection established.");
+
+                // Iniciar Vista de la Consola
+                ConsoleView consoleView = new ConsoleView();
+                consoleView.showMenu();
             } else {
                 System.err.println("Main: Failed to connect to database.");
             }
