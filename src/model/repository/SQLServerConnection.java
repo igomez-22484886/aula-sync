@@ -7,8 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SQLServerConnection {
-    public static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=master;encrypt=false";
-    public static final String USER = "SA";
+    public static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=aula-sync;encrypt=false";
+    public static final String USER = "sa";
     public static final String PASSWORD = "c_hup@meLa1234";
     private static final Logger LOGGER = Logger.getLogger(SQLServerConnection.class.getName());
 
