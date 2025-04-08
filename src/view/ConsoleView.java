@@ -1,10 +1,13 @@
 package view;
 
+import model.functions.ExportMetric;
+
 import java.util.Scanner;
 
 public class ConsoleView {
 
     private final Scanner scanner;
+    private final ExportMetric exportMetric = new ExportMetric();
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
@@ -30,7 +33,7 @@ public class ConsoleView {
 
             switch (option) {
                 case 1:
-                    System.out.println("Feature not implemented yet.");
+                    exportMetric.guardarMetricaCSV();
                     break;
                 case 2:
                     System.out.println("Feature not implemented yet.");
