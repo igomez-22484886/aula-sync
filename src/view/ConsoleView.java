@@ -1,5 +1,7 @@
 package view;
 
+import model.functions.ExportMetric;
+
 import java.util.Scanner;
 
 public class ConsoleView {
@@ -13,7 +15,7 @@ public class ConsoleView {
     public void showMenu() {
         while (true) {
             System.out.println("\n=== AulaSync Console Menu ===");
-            System.out.println("1. View user by ID");
+            System.out.println("1. Ask for Data");
             System.out.println("2. View all classrooms");
             System.out.println("3. View reservations by date");
             System.out.println("4. Exit");
@@ -30,7 +32,7 @@ public class ConsoleView {
 
             switch (option) {
                 case 1:
-                    System.out.println("Feature not implemented yet.");
+                    ExportMetric.exportTableToCSV("UserTable");
                     break;
                 case 2:
                     System.out.println("Feature not implemented yet.");
