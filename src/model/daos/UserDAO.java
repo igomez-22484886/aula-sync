@@ -1,25 +1,10 @@
-package model;
+package model.daos;
 
+import model.User;
 import java.sql.*;
+import static model.repository.SQLServerConnection.*;
 
 public class UserDAO {
-    private Connection connection;
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=AulaSync;trustServerCertificate=true";
-    private static final String USER = "SA";
-    private static final String PASSWORD = "c_hup@meLa1234";
-
-    /**
-     * Constructor de las conexiones
-     * @param connection
-     */
-    public UserDAO(Connection connection) {
-        this.connection = connection;
-    }
-
-    /**
-     * Constructor para el registro de usuarios
-     * @param user
-     */
     public void registerUser(User user) {
         String sql = "INSERT INTO UserTable (username, password, email) VALUES (?, ?, ?)";
 
@@ -38,11 +23,6 @@ public class UserDAO {
         }
     }
 
-    /**
-     *  Verificación de que el usuario existe
-     * @param username
-     * @return
-     */
     public boolean userExists(String username) {
         String sql = "SELECT COUNT(*) FROM UserTable WHERE username = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -60,12 +40,6 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Verificación de las credenciales
-     * @param email
-     * @param password
-     * @return
-     */
     public boolean verificarCredenciales(String email, String password) {
         String sql = "SELECT * FROM UserTable WHERE email = ? AND password = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
