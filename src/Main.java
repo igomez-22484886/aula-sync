@@ -13,7 +13,7 @@ public class Main {
 
                 // Iniciar Vista de la Consola
                 ConsoleView consoleView = new ConsoleView();
-                consoleView.showMenu();
+                consoleView.showInitialMenu();
             } else {
                 System.err.println("Main: Failed to connect to database.");
             }
