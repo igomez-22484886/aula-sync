@@ -2,12 +2,14 @@ package view;
 
 import viewModel.ConsoleViewModel;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleView {
 
     private final Scanner scanner;
     private final ConsoleViewModel consoleViewModel = new ConsoleViewModel();
+    private Integer currentUserId = null;
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
@@ -88,6 +90,7 @@ public class ConsoleView {
             boolean result = consoleViewModel.signUp(email, password);
             if (result) {
                 System.out.println("showSignUpMenu: Sign-up successful!");
+                currentUserId = consoleViewModel.getUserIdByEmail(email);
                 showPrincipalMenu();
             } else {
                 System.out.println("showSignUpMenu: Sign-up failed. Please try again.");
@@ -206,16 +209,16 @@ public class ConsoleView {
 
                 switch (choice) {
                     case 1:
-                        consoleViewModel.reserveClassroom();
+                        reserveClassroom();
                         break;
                     case 2:
-                        consoleViewModel.cancelClassroomReservation();
+                        cancelClassroomReservation();
                         break;
                     case 3:
-                        consoleViewModel.viewReservedClassrooms();
+                        viewReservedClassrooms();
                         break;
                     case 4:
-                        consoleViewModel.exportMetrics();
+                        exportMetrics();
                         break;
                     case 5:
                         System.out.println("showPrincipalMenu: Logging out...");
@@ -227,6 +230,111 @@ public class ConsoleView {
         } catch (Exception e) {
             System.out.println("showPrincipalMenu: Error occurred while displaying the principal menu. Please try again.");
             e.printStackTrace();
+        }
+    }
+
+    private boolean reserveClassroom() {
+        try {
+            System.out.print("reserveClassroom: Enter the classroom ID to reserve: ");
+            String classRoomId = scanner.nextLine();
+
+            System.out.print("reserveClassroom: Enter your user ID: ");
+            String userId = scanner.nextLine();
+
+            System.out.print("reserveClassroom: Enter reservation date (yyyy-MM-dd): ");
+            String date = scanner.nextLine();
+
+            System.out.print("reserveClassroom: Enter start time (HH:mm): ");
+            String startTime = scanner.nextLine();
+
+            System.out.print("reserveClassroom: Enter end time (HH:mm): ");
+            String endTime = scanner.nextLine();
+
+            boolean success = consoleViewModel.reserveClassroom(userId, classRoomId, date, startTime, endTime);
+
+            if (success) {
+                System.out.println("reserveClassroom: Classroom reserved successfully!");
+            } else {
+                System.out.println("reserveClassroom: Failed to reserve the classroom.");
+            }
+
+            return success;
+        } catch (Exception e) {
+            System.out.println("reserveClassroom: Error occurred while reserving the classroom. Please try again.");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public boolean cancelClassroomReservation() {
+        try {
+            System.out.println("cancelClassroomReservation: Enter the reservation ID to cancel: ");
+
+            String reservationId = scanner.next();
+            consoleViewModel.cancelClassroomReservation(reservationId);
+
+            System.out.println("cancelClassroomReservation: Reservation canceled successfully!");
+            return true;
+        } catch (Exception e) {
+            System.out.println("cancelClassroomReservation: Error occurred while canceling the reservation. Please try again.");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void viewReservedClassrooms() {
+        try {
+            List<String> reservedClassrooms = consoleViewModel.getReservedClassrooms();
+
+            if (reservedClassrooms.isEmpty()) {
+                System.out.println("viewReservedClassrooms: No classrooms are currently reserved.");
+            } else {
+                System.out.println("viewReservedClassrooms: Reserved Classrooms:\n" + reservedClassrooms);
+            }
+        } catch (Exception e) {
+            System.out.println("viewReservedClassrooms: Error occurred while fetching reserved classrooms. Please try again.");
+            e.printStackTrace();
+        }
+    }
+
+    public boolean exportMetrics() {
+        try {
+            System.out.println("exportMetrics: Choose the metrics to export:");
+            System.out.println("1. User metrics");
+            System.out.println("2. Classroom metrics");
+            System.out.println("3. Reservation metrics");
+            System.out.println("4. Export all");
+
+            String option = scanner.nextLine();
+
+            switch (option) {
+                case "1":
+                    consoleViewModel.exportUserMetrics();
+                    break;
+                case "2":
+                    consoleViewModel.exportClassroomMetrics();
+                    break;
+                case "3":
+                    consoleViewModel.exportReservationMetrics();
+                    break;
+                case "4":
+                    consoleViewModel.exportUserMetrics();
+                    consoleViewModel.exportClassroomMetrics();
+                    consoleViewModel.exportReservationMetrics();
+                    break;
+                default:
+                    System.out.println("exportMetrics: Invalid option. Please try again.");
+                    return false;
+            }
+
+            System.out.println("exportMetrics: Metrics exported successfully!");
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("exportMetrics: Error occurred while exporting metrics. Please try again.");
+            e.printStackTrace();
+            return false;
         }
     }
 }

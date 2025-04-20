@@ -102,4 +102,27 @@ public class UserDAO {
         return false;
     }
 
+    public Integer getUserIdByEmail(String email) {
+        String sql = "SELECT UserId FROM UserTable WHERE email = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Integer userId = rs.getInt("UserId");
+                System.out.println("getUserIdByEmail: User found, UserId: " + userId);
+                return userId;
+            } else {
+                System.out.println("getUserIdByEmail: No user found with email: " + email);
+                return null;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("getUserIdByEmail: SQLException occurred: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
