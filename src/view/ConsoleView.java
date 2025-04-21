@@ -9,7 +9,7 @@ public class ConsoleView {
 
     private final Scanner scanner;
     private final ConsoleViewModel consoleViewModel = new ConsoleViewModel();
-    private Integer currentUserId = null;
+    private String currentUserId = null;
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
@@ -238,9 +238,6 @@ public class ConsoleView {
             System.out.print("reserveClassroom: Enter the classroom ID to reserve: ");
             String classRoomId = scanner.nextLine();
 
-            System.out.print("reserveClassroom: Enter your user ID: ");
-            String userId = scanner.nextLine();
-
             System.out.print("reserveClassroom: Enter reservation date (yyyy-MM-dd): ");
             String date = scanner.nextLine();
 
@@ -250,7 +247,7 @@ public class ConsoleView {
             System.out.print("reserveClassroom: Enter end time (HH:mm): ");
             String endTime = scanner.nextLine();
 
-            boolean success = consoleViewModel.reserveClassroom(userId, classRoomId, date, startTime, endTime);
+            boolean success = consoleViewModel.reserveClassroom(currentUserId, classRoomId, date, startTime, endTime);
 
             if (success) {
                 System.out.println("reserveClassroom: Classroom reserved successfully!");

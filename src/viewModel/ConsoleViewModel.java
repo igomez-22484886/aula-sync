@@ -133,7 +133,7 @@ public class ConsoleViewModel {
         }
     }
 
-    public Integer getUserIdByEmail(String email) {
+    public String getUserIdByEmail(String email) {
         try {
             return userDAO.getUserIdByEmail(email);
         } catch (Exception e) {
