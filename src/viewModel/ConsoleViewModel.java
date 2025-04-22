@@ -1,6 +1,9 @@
 package viewModel;
 
+import model.Classroom;
+import model.Classroom.ClassroomStatus;
 import model.User;
+import model.daos.ClassroomDAO;
 import model.daos.ReservationDAO;
 import model.daos.UserDAO;
 import model.functions.ExportMetric;
@@ -13,6 +16,7 @@ import java.util.List;
 public class ConsoleViewModel {
     UserDAO userDAO = new UserDAO();
     ReservationDAO reservationDAO = new ReservationDAO();
+    ClassroomDAO classroomDAO = new ClassroomDAO();
 
     public boolean signUp(String email, String password) {
         return userDAO.checkCredentials(email, password);
@@ -143,4 +147,33 @@ public class ConsoleViewModel {
         }
     }
 
+    public User getUserById(String id) {
+        try {
+            return userDAO.getUserById(id);
+        } catch (Exception e) {
+            System.out.println("getUserIdByEmail: Error occurred while fetching user.");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void insertSampleClassrooms() {
+        for (int building = 1; building <= 4; building++) {
+            for (int floor = 1; floor <= 3; floor++) {
+                for (int classNumber = 1; classNumber <= 5; classNumber++) { // Puedes ajustar el rango si necesitas más aulas
+                    // Generar ID con 4 dígitos: B (1 dígito) + F (1 dígito) + NN (2 dígitos)
+                    String id = String.format("%d%d%02d", building, floor, classNumber);
+
+                    int capacity = 30; // Capacidad fija por ahora
+                    ClassroomStatus status = ClassroomStatus.AVAILABLE;
+
+                    // ${insertSampleClassrooms}: Creating classroom with id " + id
+                    System.out.println("insertSampleClassrooms: Creating classroom with id " + id);
+
+                    Classroom classroom = new Classroom(Integer.parseInt(id), capacity, status);
+                    classroomDAO.insertClassroom(classroom);
+                }
+            }
+        }
+    }
 }

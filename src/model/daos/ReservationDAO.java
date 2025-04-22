@@ -65,24 +65,43 @@ public class ReservationDAO {
     }
 
     public boolean createReservation(int userId, int classroomId, Date date, Time startTime, Time endTime) {
-        String sql = """
+        String insertSql = """
             INSERT INTO ReservationTable (UserId, ClassroomId, ReservationDate, StartTime, EndTime)
             VALUES (?, ?, ?, ?, ?)
             """;
 
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String updateStatusSql = """
+            UPDATE ClassroomTable SET Status = 'Reserved' WHERE ClassroomId = ?
+            """;
 
-            stmt.setInt(1, userId);
-            stmt.setInt(2, classroomId);
-            stmt.setDate(3, date);
-            stmt.setTime(4, startTime);
-            stmt.setTime(5, endTime);
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            conn.setAutoCommit(false);
 
-            return stmt.executeUpdate() > 0;
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+                 PreparedStatement updateStmt = conn.prepareStatement(updateStatusSql)) {
+
+                insertStmt.setInt(1, userId);
+                insertStmt.setInt(2, classroomId);
+                insertStmt.setDate(3, date);
+                insertStmt.setTime(4, startTime);
+                insertStmt.setTime(5, endTime);
+
+                int rowsInserted = insertStmt.executeUpdate();
+
+                updateStmt.setInt(1, classroomId);
+                updateStmt.executeUpdate();
+
+                conn.commit();
+                return rowsInserted > 0;
+            } catch (SQLException e) {
+                conn.rollback();
+                System.out.println("createReservation: Failed to create reservation, rolling back.");
+                e.printStackTrace();
+                return false;
+            }
 
         } catch (SQLException e) {
-            System.out.println("createReservation: Failed to create reservation.");
+            System.out.println("createReservation: Connection error.");
             e.printStackTrace();
             return false;
         }
@@ -140,19 +159,46 @@ public class ReservationDAO {
     }
 
     public boolean cancelReservation(int reservationId) {
-        String sql = "DELETE FROM ReservationTable WHERE ReservationId = ?";
+        String getClassroomSql = "SELECT ClassroomId FROM ReservationTable WHERE ReservationId = ?";
+        String deleteSql = "DELETE FROM ReservationTable WHERE ReservationId = ?";
+        String updateStatusSql = "UPDATE ClassroomTable SET Status = 'Available' WHERE ClassroomId = ?";
 
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            conn.setAutoCommit(false);
 
-            stmt.setInt(1, reservationId);
-            return stmt.executeUpdate() > 0;
+            try (PreparedStatement getStmt = conn.prepareStatement(getClassroomSql);
+                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
+                 PreparedStatement updateStmt = conn.prepareStatement(updateStatusSql)) {
+
+                int classroomId = -1;
+                getStmt.setInt(1, reservationId);
+                ResultSet rs = getStmt.executeQuery();
+                if (rs.next()) {
+                    classroomId = rs.getInt("ClassroomId");
+                } else {
+                    return false;
+                }
+
+                deleteStmt.setInt(1, reservationId);
+                int rowsDeleted = deleteStmt.executeUpdate();
+
+                updateStmt.setInt(1, classroomId);
+                updateStmt.executeUpdate();
+
+                conn.commit();
+                return rowsDeleted > 0;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                System.out.println("cancelReservation: Failed to cancel reservation, rolling back.");
+                e.printStackTrace();
+                return false;
+            }
 
         } catch (SQLException e) {
-            System.out.println("cancelReservation: Failed to cancel reservation.");
+            System.out.println("cancelReservation: Connection error.");
             e.printStackTrace();
             return false;
         }
     }
 }
-

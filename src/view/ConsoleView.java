@@ -1,5 +1,6 @@
 package view;
 
+import model.User;
 import viewModel.ConsoleViewModel;
 
 import java.util.List;
@@ -10,6 +11,7 @@ public class ConsoleView {
     private final Scanner scanner;
     private final ConsoleViewModel consoleViewModel = new ConsoleViewModel();
     private String currentUserId = null;
+    private User currentUser = null;
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
@@ -189,6 +191,9 @@ public class ConsoleView {
 
     private void showPrincipalMenu() {
         try {
+
+            currentUser = consoleViewModel.getUserById(currentUserId);
+
             while (true) {
                 System.out.println("\n=== Principal Menu ===");
                 System.out.println("1. Reserve a Classroom");
@@ -196,6 +201,12 @@ public class ConsoleView {
                 System.out.println("3. View Reserved Classrooms");
                 System.out.println("4. Export Metrics");
                 System.out.println("5. Log Out");
+
+                if (currentUser.getUserName().startsWith("a")) {
+                    System.out.println("\n--- Administrator Tools: ---");
+                    System.out.println("6. Insert Sample Classrooms");
+                }
+
                 System.out.print("showPrincipalMenu: Enter your choice: ");
 
                 if (!scanner.hasNextInt()) {
@@ -219,6 +230,9 @@ public class ConsoleView {
                         break;
                     case 4:
                         exportMetrics();
+                        break;
+                    case 6:
+                        consoleViewModel.insertSampleClassrooms();
                         break;
                     case 5:
                         System.out.println("showPrincipalMenu: Logging out...");
@@ -271,7 +285,6 @@ public class ConsoleView {
             String reservationId = scanner.next();
             consoleViewModel.cancelClassroomReservation(reservationId);
 
-            System.out.println("cancelClassroomReservation: Reservation canceled successfully!");
             return true;
         } catch (Exception e) {
             System.out.println("cancelClassroomReservation: Error occurred while canceling the reservation. Please try again.");

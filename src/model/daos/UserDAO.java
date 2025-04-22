@@ -125,4 +125,34 @@ public class UserDAO {
             return null;
         }
     }
+
+    public User getUserById(String id) {
+        String sql = "SELECT * FROM UserTable WHERE UserId = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                User user = new User(
+                        rs.getInt("UserId"),
+                        rs.getString("UserName"),
+                        rs.getString("Email"),
+                        rs.getString("Password")
+                );
+                System.out.println("getUserById: User found with ID " + id);
+                return user;
+            } else {
+                System.out.println("getUserById: No user found with ID " + id);
+                return null;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("getUserById: SQLException occurred: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
