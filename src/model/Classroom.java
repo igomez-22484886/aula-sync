@@ -64,8 +64,7 @@ public class Classroom {
 
     public enum ClassroomStatus {
         AVAILABLE("Available"),
-        RESERVED("Reserved"),
-        OCCUPIED("Occupied");
+        RESERVED("Reserved");
 
         private final String label;
 

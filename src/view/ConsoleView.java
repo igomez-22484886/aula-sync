@@ -55,7 +55,7 @@ public class ConsoleView {
             }
         } catch (Exception e) {
             System.out.println("showInitialMenu: Error occurred while displaying the menu. Please try again.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -99,7 +99,7 @@ public class ConsoleView {
             }
         } catch (Exception e) {
             System.out.println("showSignUpMenu: Error occurred during the sign-up process. Please try again.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -184,14 +184,13 @@ public class ConsoleView {
             }
         } catch (Exception e) {
             System.out.println("showRegisterMenu: Error occurred during the registration process. Please try again.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
 
     private void showPrincipalMenu() {
         try {
-
             currentUser = consoleViewModel.getUserById(currentUserId);
 
             while (true) {
@@ -202,9 +201,22 @@ public class ConsoleView {
                 System.out.println("4. Export Metrics");
                 System.out.println("5. Log Out");
 
-                if (currentUser.getUserName().startsWith("a")) {
+                boolean isAdmin = currentUser.getUserName().startsWith("a");
+                boolean isPrincipal = currentUser.getUserName().startsWith("p");
+
+                int menuOption = 6;
+                if (isAdmin || isPrincipal) {
                     System.out.println("\n--- Administrator Tools: ---");
-                    System.out.println("6. Insert Sample Classrooms");
+
+                    if (isAdmin) {
+                        System.out.println(menuOption++ + ". Create Teacher User");
+                    }
+
+                    System.out.println(menuOption++ + ". Create Student User");
+
+                    if (isAdmin) {
+                        System.out.println(menuOption++ + ". Insert Sample Classrooms");
+                    }
                 }
 
                 System.out.print("showPrincipalMenu: Enter your choice: ");
@@ -231,21 +243,56 @@ public class ConsoleView {
                     case 4:
                         exportMetrics();
                         break;
-                    case 6:
-                        consoleViewModel.insertSampleClassrooms();
-                        break;
                     case 5:
                         System.out.println("showPrincipalMenu: Logging out...");
                         return;
+                    case 8:
+                        if (isAdmin) {
+                            consoleViewModel.insertSampleClassrooms();
+                        } else {
+                            System.out.println("Access denied.");
+                        }
+                        break;
+                    case 6:
+                        if (isAdmin) {
+                            System.out.print("Enter teacher email: ");
+                            String teacherEmail = scanner.nextLine();
+                            System.out.print("Enter teacher password: ");
+                            String teacherPassword = scanner.nextLine();
+                            if (consoleViewModel.registerTeacher(teacherEmail, teacherPassword)) {
+                                System.out.println("Teacher registered successfully.");
+                            } else {
+                                System.out.println("Failed to register teacher.");
+                            }
+                        } else {
+                            System.out.println("Access denied.");
+                        }
+                        break;
+                    case 7:
+                        if (isPrincipal || isAdmin) {
+                            System.out.print("Enter student email: ");
+                            String studentEmail = scanner.nextLine();
+                            System.out.print("Enter student password: ");
+                            String studentPassword = scanner.nextLine();
+                            if (consoleViewModel.registerStudent(studentEmail, studentPassword)) {
+                                System.out.println("Student registered successfully.");
+                            } else {
+                                System.out.println("Failed to register student.");
+                            }
+                        } else {
+                            System.out.println("Access denied.");
+                        }
+                        break;
                     default:
                         System.out.println("showPrincipalMenu: Invalid option. Please try again.");
                 }
             }
         } catch (Exception e) {
             System.out.println("showPrincipalMenu: Error occurred while displaying the principal menu. Please try again.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
+
 
     private boolean reserveClassroom() {
         try {
@@ -272,7 +319,7 @@ public class ConsoleView {
             return success;
         } catch (Exception e) {
             System.out.println("reserveClassroom: Error occurred while reserving the classroom. Please try again.");
-            e.printStackTrace();
+            // e.printStackTrace();
             return false;
         }
     }
@@ -288,7 +335,7 @@ public class ConsoleView {
             return true;
         } catch (Exception e) {
             System.out.println("cancelClassroomReservation: Error occurred while canceling the reservation. Please try again.");
-            e.printStackTrace();
+            // e.printStackTrace();
             return false;
         }
     }
@@ -304,7 +351,7 @@ public class ConsoleView {
             }
         } catch (Exception e) {
             System.out.println("viewReservedClassrooms: Error occurred while fetching reserved classrooms. Please try again.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -343,7 +390,7 @@ public class ConsoleView {
 
         } catch (Exception e) {
             System.out.println("exportMetrics: Error occurred while exporting metrics. Please try again.");
-            e.printStackTrace();
+            // e.printStackTrace();
             return false;
         }
     }

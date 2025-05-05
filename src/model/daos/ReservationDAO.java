@@ -1,5 +1,7 @@
 package model.daos;
 
+import model.Classroom;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ public class ReservationDAO {
 
         } catch (SQLException e) {
             System.out.println("getReservationsByUser: Failed to retrieve reservations.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
         return reservations;
@@ -36,13 +38,13 @@ public class ReservationDAO {
     public List<Integer> getAvailableClassrooms(Date reservationDate, Time startTime, Time endTime) {
         List<Integer> classrooms = new ArrayList<>();
         String sql = """
-            SELECT ClassroomId FROM ClassroomTable WHERE ClassroomId NOT IN (
-                SELECT ClassroomId FROM ReservationTable
-                WHERE ReservationDate = ? AND (
-                    (? < EndTime AND ? > StartTime)
+                SELECT ClassroomId FROM ClassroomTable WHERE ClassroomId NOT IN (
+                    SELECT ClassroomId FROM ReservationTable
+                    WHERE ReservationDate = ? AND (
+                        (? < EndTime AND ? > StartTime)
+                    )
                 )
-            )
-            """;
+                """;
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -58,21 +60,26 @@ public class ReservationDAO {
 
         } catch (SQLException e) {
             System.out.println("getAvailableClassrooms: Failed to get available classrooms.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
         return classrooms;
     }
 
     public boolean createReservation(int userId, int classroomId, Date date, Time startTime, Time endTime) {
+        if (checkClassroomReservation(classroomId, date, startTime, endTime)) {
+            System.out.println("createReservation: Aula ya reservada en ese horario.");
+            return false;
+        }
+
         String insertSql = """
             INSERT INTO ReservationTable (UserId, ClassroomId, ReservationDate, StartTime, EndTime)
             VALUES (?, ?, ?, ?, ?)
             """;
 
         String updateStatusSql = """
-            UPDATE ClassroomTable SET Status = 'Reserved' WHERE ClassroomId = ?
-            """;
+            UPDATE ClassroomTable SET Status = '%s' WHERE ClassroomId = ?"""
+                .formatted(Classroom.ClassroomStatus.RESERVED.getLabel());
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
             conn.setAutoCommit(false);
@@ -95,17 +102,46 @@ public class ReservationDAO {
                 return rowsInserted > 0;
             } catch (SQLException e) {
                 conn.rollback();
-                System.out.println("createReservation: Failed to create reservation, rolling back.");
-                e.printStackTrace();
+                System.out.println("createReservation: Fallo al crear la reserva, haciendo rollback.");
+                // e.printStackTrace();
                 return false;
             }
 
         } catch (SQLException e) {
-            System.out.println("createReservation: Connection error.");
-            e.printStackTrace();
+            System.out.println("createReservation: Error de conexión.");
+            // e.printStackTrace();
             return false;
         }
     }
+
+    private boolean checkClassroomReservation(int classroomId, Date date, Time startTime, Time endTime) {
+        String checkSql = """
+        SELECT COUNT(*) FROM ReservationTable
+        WHERE ClassroomId = ? AND ReservationDate = ?
+        AND (StartTime < CAST(? AS TIME) AND EndTime > CAST(? AS TIME))
+        """;
+
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+
+            checkStmt.setInt(1, classroomId);
+            checkStmt.setDate(2, date);
+            checkStmt.setTime(3, endTime);   // overlap condition
+            checkStmt.setTime(4, startTime); // overlap condition
+
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("checkClassroomReservation: Error checking reservation.");
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     public List<String> getAllReservations() {
         List<String> reservations = new ArrayList<>();
@@ -126,7 +162,7 @@ public class ReservationDAO {
 
         } catch (SQLException e) {
             System.out.println("getAllReservations: Failed to retrieve reservations.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
         return reservations;
@@ -152,7 +188,7 @@ public class ReservationDAO {
 
         } catch (SQLException e) {
             System.out.println("getReservationsByClassroom: Failed to retrieve reservations.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
         return reservations;
@@ -191,13 +227,13 @@ public class ReservationDAO {
             } catch (SQLException e) {
                 conn.rollback();
                 System.out.println("cancelReservation: Failed to cancel reservation, rolling back.");
-                e.printStackTrace();
+                // e.printStackTrace();
                 return false;
             }
 
         } catch (SQLException e) {
             System.out.println("cancelReservation: Connection error.");
-            e.printStackTrace();
+            // e.printStackTrace();
             return false;
         }
     }

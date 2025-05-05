@@ -32,7 +32,7 @@ public class UserDAO {
 
         } catch (SQLException e) {
             System.out.println("registerUser: Error during registration.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
         return result;
@@ -51,7 +51,7 @@ public class UserDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return false;
     }
@@ -68,7 +68,7 @@ public class UserDAO {
             return rs.next();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return false;
     }
@@ -97,7 +97,7 @@ public class UserDAO {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return false;
     }
@@ -121,7 +121,7 @@ public class UserDAO {
 
         } catch (SQLException e) {
             System.out.println("getUserIdByEmail: SQLException occurred: " + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
             return null;
         }
     }
@@ -151,7 +151,7 @@ public class UserDAO {
 
         } catch (SQLException e) {
             System.out.println("getUserById: SQLException occurred: " + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
             return null;
         }
     }
