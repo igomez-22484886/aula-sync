@@ -3,6 +3,7 @@ package view;
 import model.User;
 import viewModel.ConsoleViewModel;
 
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,14 +20,17 @@ public class ConsoleView {
 
     public void showInitialMenu() {
         try {
-            if (!consoleViewModel.checkForInstitution()) {
+            boolean institutionExists = consoleViewModel.checkForInstitution();
+            if (!institutionExists) {
                 System.out.println("Warning: No educational institution account found. Please create one to use the application properly.");
             }
 
             while (true) {
                 System.out.println("\n=== AulaSync Console Menu ===");
                 System.out.println("1. Sign Up");
-                System.out.println("2. Register User");
+                if (!institutionExists) {
+                    System.out.println("2. Register User");
+                }
                 System.out.println("3. Exit");
                 System.out.print("Select an option: ");
 
@@ -44,7 +48,11 @@ public class ConsoleView {
                         showSignUpMenu();
                         break;
                     case 2:
-                        showRegisterMenu();
+                        if (!institutionExists) {
+                            showRegisterMenu();
+                        } else {
+                            System.out.println("Error: Register option is disabled because an institution already exists.");
+                        }
                         break;
                     case 3:
                         System.out.println("Exiting...");
@@ -204,18 +212,17 @@ public class ConsoleView {
                 boolean isAdmin = currentUser.getUserName().startsWith("a");
                 boolean isPrincipal = currentUser.getUserName().startsWith("p");
 
-                int menuOption = 6;
                 if (isAdmin || isPrincipal) {
                     System.out.println("\n--- Administrator Tools: ---");
 
                     if (isAdmin) {
-                        System.out.println(menuOption++ + ". Create Teacher User");
+                        System.out.println("6. Create Teacher User");
                     }
 
-                    System.out.println(menuOption++ + ". Create Student User");
+                    System.out.println("7. Create Student User");
 
                     if (isAdmin) {
-                        System.out.println(menuOption++ + ". Insert Sample Classrooms");
+                        System.out.println("8. Insert Sample Classrooms");
                     }
                 }
 
