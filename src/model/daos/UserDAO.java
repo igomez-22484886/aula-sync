@@ -1,17 +1,20 @@
 package model.daos;
 
 import model.User;
+
 import java.sql.*;
+import java.util.logging.Logger;
+
 import static model.repository.SQLServerConnection.*;
 
 public class UserDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
+
     public boolean registerUser(User user) {
-        System.out.println("registerUser: Starting registration process...");
 
         if (user.getUserName().startsWith("a")) {
-            System.out.println("registerUser: Detected institution-type user, checking for existing institution...");
             if (checkInstitutionExists()) {
-                System.out.println("registerUser: Registration denied - An institution already exists.");
                 return false;
             }
         }
@@ -27,17 +30,13 @@ public class UserDAO {
             stmt.setString(3, user.getEmail());
 
             stmt.executeUpdate();
-            System.out.println("registerUser: User registered successfully.");
             result = true;
 
         } catch (SQLException e) {
-            System.out.println("registerUser: Error during registration.");
-            // e.printStackTrace();
         }
 
         return result;
     }
-
 
     public boolean userExists(String username) {
         String sql = "SELECT COUNT(*) FROM UserTable WHERE username = ?";
@@ -51,7 +50,6 @@ public class UserDAO {
             }
 
         } catch (SQLException e) {
-            // e.printStackTrace();
         }
         return false;
     }
@@ -68,22 +66,18 @@ public class UserDAO {
             return rs.next();
 
         } catch (SQLException e) {
-            // e.printStackTrace();
         }
         return false;
     }
 
     public String extractUsernameFromEmail(String email) {
-        System.out.println("extractUsernameFromEmail: Extracting username from email...");
 
         int atIndex = email.indexOf('@');
         if (atIndex == -1) {
-            System.out.println("extractUsernameFromEmail: Error - Invalid email format.");
             return null;
         }
 
         String usernamePart = email.substring(0, atIndex);
-        System.out.println("extractUsernameFromEmail: Extracted username = " + usernamePart);
         return usernamePart;
     }
 
@@ -97,7 +91,6 @@ public class UserDAO {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            // e.printStackTrace();
         }
         return false;
     }
@@ -112,16 +105,12 @@ public class UserDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 int userId = rs.getInt("UserId");
-                System.out.println("getUserIdByEmail: User found, UserId: " + userId);
                 return Integer.toString(userId);
             } else {
-                System.out.println("getUserIdByEmail: No user found with email: " + email);
                 return null;
             }
 
         } catch (SQLException e) {
-            System.out.println("getUserIdByEmail: SQLException occurred: " + e.getMessage());
-            // e.printStackTrace();
             return null;
         }
     }
@@ -142,16 +131,12 @@ public class UserDAO {
                         rs.getString("Email"),
                         rs.getString("Password")
                 );
-                System.out.println("getUserById: User found with ID " + id);
                 return user;
             } else {
-                System.out.println("getUserById: No user found with ID " + id);
                 return null;
             }
 
         } catch (SQLException e) {
-            System.out.println("getUserById: SQLException occurred: " + e.getMessage());
-            // e.printStackTrace();
             return null;
         }
     }

@@ -12,20 +12,21 @@ import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ConsoleViewModel {
     UserDAO userDAO = new UserDAO();
     ReservationDAO reservationDAO = new ReservationDAO();
     ClassroomDAO classroomDAO = new ClassroomDAO();
 
+    private static final Logger LOGGER = Logger.getLogger(ConsoleViewModel.class.getName());
+
     public boolean signUp(String email, String password) {
         return userDAO.checkCredentials(email, password);
     }
 
     public boolean registerStudent(String email, String password) {
-        System.out.println("registerStudent: Checking if institution exists...");
         if (!userDAO.checkInstitutionExists()) {
-            System.out.println("registerStudent: Registration blocked - No institution found.");
             return false;
         }
 
@@ -35,9 +36,7 @@ public class ConsoleViewModel {
     }
 
     public boolean registerTeacher(String email, String password) {
-        System.out.println("registerTeacher: Checking if institution exists...");
         if (!userDAO.checkInstitutionExists()) {
-            System.out.println("registerTeacher: Registration blocked - No institution found.");
             return false;
         }
 
@@ -48,7 +47,6 @@ public class ConsoleViewModel {
 
     public boolean registerInstitution(String email, String password) {
         if (userDAO.checkInstitutionExists()) {
-            System.out.println("registerInstitution: Error - An institution account already exists. Cannot register another one.");
             return false;
         }
         String id = userDAO.extractUsernameFromEmail(email);
@@ -71,7 +69,6 @@ public class ConsoleViewModel {
             return reservationDAO.createReservation(userId, classroomId, reservationDate, startTime, endTime);
 
         } catch (Exception e) {
-            System.out.println("reserveClassroom: Error occurred while reserving classroom. Please try again.");
             // e.printStackTrace();
             return false;
         }
@@ -83,13 +80,12 @@ public class ConsoleViewModel {
             boolean success = reservationDAO.cancelReservation(id);
 
             if (success) {
-                System.out.println("cancelClassroomReservation: Reservation canceled successfully.");
+                System.out.println("Reservation canceled successfully.");
             } else {
-                System.out.println("cancelClassroomReservation: Failed to cancel reservation.");
+                System.out.println("Failed to cancel reservation.");
             }
 
         } catch (Exception e) {
-            System.out.println("cancelClassroomReservation: Error occurred while cancelling reservation.");
             // e.printStackTrace();
         }
     }
@@ -98,7 +94,6 @@ public class ConsoleViewModel {
         try {
             return reservationDAO.getAllReservations();
         } catch (Exception e) {
-            System.out.println("getReservedClassrooms: Failed to get reserved classrooms.");
             // e.printStackTrace();
             return new ArrayList<>();
         }
@@ -108,9 +103,9 @@ public class ConsoleViewModel {
         try {
             ExportMetric exportMetric = new ExportMetric();
             exportMetric.exportTableToCSV("UserTable");
-            System.out.println("exportUserMetrics: User metrics exported.");
+            System.out.println("User metrics exported.");
         } catch (Exception e) {
-            System.out.println("exportUserMetrics: Failed to export user metrics.");
+            System.out.println("Failed to export user metrics.");
             // e.printStackTrace();
         }
     }
@@ -119,9 +114,9 @@ public class ConsoleViewModel {
         try {
             ExportMetric exportMetric = new ExportMetric();
             exportMetric.exportTableToCSV("ClassroomTable");
-            System.out.println("exportClassroomMetrics: Classroom metrics exported.");
+            System.out.println("Classroom metrics exported.");
         } catch (Exception e) {
-            System.out.println("exportClassroomMetrics: Failed to export classroom metrics.");
+            System.out.println("Failed to export classroom metrics.");
             // e.printStackTrace();
         }
     }
@@ -130,9 +125,9 @@ public class ConsoleViewModel {
         try {
             ExportMetric exportMetric = new ExportMetric();
             exportMetric.exportTableToCSV("ReservationTable");
-            System.out.println("exportReservationMetrics: Reservation metrics exported.");
+            System.out.println("Reservation metrics exported.");
         } catch (Exception e) {
-            System.out.println("exportReservationMetrics: Failed to export reservation metrics.");
+            System.out.println("Failed to export reservation metrics.");
             // e.printStackTrace();
         }
     }
@@ -141,7 +136,6 @@ public class ConsoleViewModel {
         try {
             return userDAO.getUserIdByEmail(email);
         } catch (Exception e) {
-            System.out.println("getUserIdByEmail: Error occurred while fetching user ID.");
             // e.printStackTrace();
             return null;
         }
@@ -151,7 +145,6 @@ public class ConsoleViewModel {
         try {
             return userDAO.getUserById(id);
         } catch (Exception e) {
-            System.out.println("getUserIdByEmail: Error occurred while fetching user.");
             // e.printStackTrace();
             return null;
         }
@@ -166,7 +159,6 @@ public class ConsoleViewModel {
                     int capacity = 30; // Capacidad fija por ahora
                     ClassroomStatus status = ClassroomStatus.AVAILABLE;
 
-                    System.out.println("insertSampleClassrooms: Creating classroom with id " + id);
 
                     Classroom classroom = new Classroom(Integer.parseInt(id), capacity, status);
                     classroomDAO.insertClassroom(classroom);

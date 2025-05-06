@@ -6,31 +6,32 @@ import model.Classroom.ClassroomStatus;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static model.repository.SQLServerConnection.*;
 
 public class ClassroomDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(ClassroomDAO.class.getName());
+
     public void insertClassroom(Classroom classroom) {
         String sql = "INSERT INTO ClassroomTable (ClassroomId, Capacity, Status) VALUES (?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, classroom.getClassroomId()); // Se guarda ClassroomId, no id
+            stmt.setInt(1, classroom.getClassroomId());
             stmt.setInt(2, classroom.getCapacity());
             stmt.setString(3, classroom.getStatus().getLabel());
             int rowsInserted = stmt.executeUpdate();
-            System.out.println("ClassroomDAO: Inserted " + rowsInserted + " row(s).");
 
             if (rowsInserted > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        classroom.setId(generatedKeys.getInt(1)); // Obtener el id generado
-                        System.out.println("ClassroomDAO: Generated ClassroomId = " + classroom.getId());
+                        classroom.setId(generatedKeys.getInt(1));
                     }
                 }
             }
         } catch (SQLException e) {
-            System.out.println("ClassroomDAO: Error inserting classroom - " + e.getMessage());
         }
     }
 
@@ -43,19 +44,16 @@ public class ClassroomDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     Classroom classroom = new Classroom(
-                            rs.getInt("ClassroomId"),    // Obtén el ClassroomId de la DB
+                            rs.getInt("ClassroomId"),
                             rs.getInt("Capacity"),
                             ClassroomStatus.fromLabel(rs.getString("Status"))
                     );
-                    classroom.setId(rs.getInt("Id")); // Asignar el id del registro
-                    System.out.println("ClassroomDAO: Retrieved classroom with ClassroomId = " + id);
+                    classroom.setId(rs.getInt("Id"));
                     return classroom;
                 } else {
-                    System.out.println("ClassroomDAO: No classroom found with ClassroomId = " + id);
                 }
             }
         } catch (SQLException e) {
-            System.out.println("ClassroomDAO: Error retrieving classroom by ClassroomId - " + e.getMessage());
         }
         return null;
     }
@@ -74,9 +72,7 @@ public class ClassroomDAO {
                         ClassroomStatus.fromLabel(rs.getString("Status"))
                 ));
             }
-            System.out.println("ClassroomDAO: Retrieved " + classrooms.size() + " classrooms.");
         } catch (SQLException e) {
-            System.out.println("ClassroomDAO: Error retrieving all classrooms - " + e.getMessage());
         }
         return classrooms;
     }
@@ -88,12 +84,10 @@ public class ClassroomDAO {
 
             stmt.setInt(1, classroom.getCapacity());
             stmt.setString(2, classroom.getStatus().getLabel());
-            stmt.setInt(3, classroom.getClassroomId());  // Se usa ClassroomId para actualizar
+            stmt.setInt(3, classroom.getClassroomId());
             int updated = stmt.executeUpdate();
-            System.out.println("ClassroomDAO: Updated " + updated + " row(s) for ClassroomId = " + classroom.getClassroomId());
             return updated > 0;
         } catch (SQLException e) {
-            System.out.println("ClassroomDAO: Error updating classroom - " + e.getMessage());
             return false;
         }
     }
@@ -105,11 +99,21 @@ public class ClassroomDAO {
 
             stmt.setInt(1, id);
             int deleted = stmt.executeUpdate();
-            System.out.println("ClassroomDAO: Deleted " + deleted + " row(s) for ClassroomId = " + id);
             return deleted > 0;
         } catch (SQLException e) {
-            System.out.println("ClassroomDAO: Error deleting classroom - " + e.getMessage());
             return false;
+        }
+    }
+
+    public void updateClassroomStatus(int classroomId, ClassroomStatus classroomStatus) {
+        String sql = "UPDATE ClassroomTable SET Status = ? WHERE ClassroomId = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, classroomStatus.getLabel());
+            stmt.setInt(2, classroomId);
+            int rows = stmt.executeUpdate();
+        } catch (SQLException e) {
         }
     }
 }
