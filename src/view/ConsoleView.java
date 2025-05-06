@@ -3,6 +3,9 @@ package view;
 import model.User;
 import viewModel.ConsoleViewModel;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Scanner;
@@ -203,6 +206,7 @@ public class ConsoleView {
 
             while (true) {
                 System.out.println("\n=== Principal Menu ===");
+                System.out.print("\n--- User :"+ currentUser.getUserName() + " --- \n ");
                 System.out.println("1. Reserve a Classroom");
                 System.out.println("2. Cancel Classroom Reservation");
                 System.out.println("3. View Reserved Classrooms");
@@ -306,16 +310,33 @@ public class ConsoleView {
             System.out.print("reserveClassroom: Enter the classroom ID to reserve: ");
             String classRoomId = scanner.nextLine();
 
+            // Validar formato del ID
+            if (!classRoomId.matches("^[1-4][1-3][0-9]{2}$")) {
+                System.out.println("reserveClassroom: Invalid classroom ID format.");
+                return false;
+            }
+
             System.out.print("reserveClassroom: Enter reservation date (yyyy-MM-dd): ");
-            String date = scanner.nextLine();
+            String dateStr = scanner.nextLine();
+            LocalDate date = LocalDate.parse(dateStr);
+
+            if (date.isBefore(LocalDate.now())) {
+                System.out.println("reserveClassroom: Date cannot be in the past.");
+                return false;
+            }
 
             System.out.print("reserveClassroom: Enter start time (HH:mm): ");
-            String startTime = scanner.nextLine();
+            LocalTime start = LocalTime.parse(scanner.nextLine());
 
             System.out.print("reserveClassroom: Enter end time (HH:mm): ");
-            String endTime = scanner.nextLine();
+            LocalTime end = LocalTime.parse(scanner.nextLine());
 
-            boolean success = consoleViewModel.reserveClassroom(currentUserId, classRoomId, date, startTime, endTime);
+            if (end.isBefore(start)) {
+                System.out.println("reserveClassroom: End time cannot be before start time.");
+                return false;
+            }
+
+            boolean success = consoleViewModel.reserveClassroom(currentUserId, classRoomId, dateStr, start.toString(), end.toString());
 
             if (success) {
                 System.out.println("reserveClassroom: Classroom reserved successfully!");
@@ -324,12 +345,16 @@ public class ConsoleView {
             }
 
             return success;
+        } catch (DateTimeParseException e) {
+            System.out.println("reserveClassroom: Invalid date or time format.");
+            return false;
         } catch (Exception e) {
             System.out.println("reserveClassroom: Error occurred while reserving the classroom. Please try again.");
             // e.printStackTrace();
             return false;
         }
     }
+
 
 
     public boolean cancelClassroomReservation() {
