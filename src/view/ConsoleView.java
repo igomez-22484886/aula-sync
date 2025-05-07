@@ -199,7 +199,7 @@ public class ConsoleView {
 
             while (true) {
                 System.out.println("\n=== Principal Menu ===");
-                System.out.print("\n--- User :"+ currentUser.getUserName() + " --- \n ");
+                System.out.println("--- User :"+ currentUser.getUserName() + " --- ");
                 System.out.println("1. Reserve a Classroom");
                 System.out.println("2. Cancel Classroom Reservation");
                 System.out.println("3. View Reserved Classrooms");
@@ -285,7 +285,7 @@ public class ConsoleView {
             boolean success = consoleViewModel.reserveClassroom(currentUserId, classRoomId, dateStr, start.toString(), end.toString());
 
             if (success) {
-                System.out.println("reserveClassroom: Classroom reserved successfully!");
+                System.out.println("reserveClassroom: Classroom " + classRoomId +" reserved successfully !");
             } else {
                 System.out.println("reserveClassroom: Failed to reserve the classroom.");
             }
@@ -305,21 +305,34 @@ public class ConsoleView {
 
     public boolean cancelClassroomReservation() {
         try {
-            System.out.println("cancelClassroomReservation: Enter the reservation ID to cancel: ");
+            System.out.print("cancelClassroomReservation: Ingresa el ID de la reserva para cancelar: ");
+            String reservationId = scanner.nextLine();
 
-            String reservationId = scanner.next();
-            consoleViewModel.cancelClassroomReservation(reservationId);
-
-            return true;
+            // Verifica si la reserva pertenece al usuario actual
+            if (consoleViewModel.isReservationOwnedByUser(reservationId, currentUserId)) {
+                boolean success = consoleViewModel.cancelReservation(reservationId);
+                if (success) {
+                    System.out.println("cancelClassroomReservation: Reserva cancelada exitosamente.");
+                    return true;
+                } else {
+                    System.out.println("cancelClassroomReservation: Falló al cancelar la reserva.");
+                    return false;
+                }
+            } else {
+                System.out.println("cancelClassroomReservation: Solo puedes cancelar tus propias reservas.");
+                return false;
+            }
         } catch (Exception e) {
-            System.out.println("cancelClassroomReservation: Error occurred while canceling the reservation. Please try again.");
+            System.out.println("cancelClassroomReservation: Ocurrió un error al cancelar la reserva. Por favor, intenta de nuevo.");
             e.printStackTrace();
             return false;
         }
     }
+}
 
     public void viewReservedClassrooms() {
         try {
+            ConsoleViewModel consoleViewModel;
             List<String> reservedClassrooms = consoleViewModel.getReservedClassrooms();
 
             if (reservedClassrooms.isEmpty()) {

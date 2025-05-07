@@ -76,23 +76,19 @@ public class ConsoleViewModel {
             return false;
         }
     }
-
-    public void cancelClassroomReservation(String reservationId) {
+    public boolean cancelClassroomReservation(String reservationId, String userId) {
         try {
             int id = Integer.parseInt(reservationId);
-            boolean success = reservationDAO.cancelReservation(id);
-
-            if (success) {
-                System.out.println("cancelClassroomReservation: Reservation canceled successfully.");
-            } else {
-                System.out.println("cancelClassroomReservation: Failed to cancel reservation.");
-            }
-
+            return reservationDAO.cancelReservationIfOwnedByUser(id, userId);
         } catch (Exception e) {
             System.out.println("cancelClassroomReservation: Error occurred while cancelling reservation.");
             e.printStackTrace();
+            return false;
         }
     }
+
+
+
 
     public List<String> getReservedClassrooms() {
         try {
@@ -174,6 +170,27 @@ public class ConsoleViewModel {
                     classroomDAO.insertClassroom(classroom);
                 }
             }
+        }
+    }
+    public boolean isReservationOwnedByUser(String reservationId, String userId) {
+        try {
+            ReservationDAO reservationDAO = new ReservationDAO(); // Asegúrate de que esta clase exista
+            String ownerId = reservationDAO.getReservationOwner(reservationId);
+            return ownerId != null && ownerId.equals(userId);
+        } catch (Exception e) {
+            System.out.println("isReservationOwnedByUser: Error al verificar el propietario de la reserva.");
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean cancelReservation(String reservationId) {
+        try {
+            ReservationDAO reservationDAO = new ReservationDAO(); // Asegúrate de que esta clase exista
+            return reservationDAO.deleteReservation(reservationId);
+        } catch (Exception e) {
+            System.out.println("cancelReservation: Error al cancelar la reserva.");
+            e.printStackTrace();
+            return false;
         }
     }
 }

@@ -1,5 +1,7 @@
 package model.daos;
 
+import model.repository.SQLServerConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ public class ReservationDAO {
                         ", Classroom: " + rs.getInt("ClassroomId") +
                         ", Date: " + rs.getDate("ReservationDate") +
                         ", From: " + rs.getTime("StartTime") +
-                        ", To: " + rs.getTime("EndTime"));
+                        ", To: " + rs.getTime("EndTime\n"));
             }
 
         } catch (SQLException e) {
@@ -64,7 +66,7 @@ public class ReservationDAO {
         return classrooms;
     }
 
-    public boolean createReservation(int userId, int classroomId, Date date, Time startTime, Time endTime) {
+    public  boolean  createReservation(int userId, int classroomId, Date date, Time startTime, Time endTime) {
         String insertSql = """
             INSERT INTO ReservationTable (UserId, ClassroomId, ReservationDate, StartTime, EndTime)
             VALUES (?, ?, ?, ?, ?)
@@ -197,6 +199,69 @@ public class ReservationDAO {
 
         } catch (SQLException e) {
             System.out.println("cancelReservation: Connection error.");
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public String getReservationOwner(String reservationId) {
+        String sql = "SELECT UserId FROM ReservationTable WHERE ReservationId = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, reservationId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return String.valueOf(rs.getInt("UserId"));
+            }
+            return null;
+
+        } catch (SQLException e) {
+            System.out.println("getReservationOwner: Failed to retrieve reservation owner.");
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public boolean deleteReservation(String reservationId) {
+        String getClassroomSql = "SELECT ClassroomId FROM ReservationTable WHERE ReservationId = ?";
+        String deleteSql = "DELETE FROM ReservationTable WHERE ReservationId = ?";
+        String updateStatusSql = "UPDATE ClassroomTable SET Status = 'Available' WHERE ClassroomId = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement getStmt = conn.prepareStatement(getClassroomSql);
+                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
+                 PreparedStatement updateStmt = conn.prepareStatement(updateStatusSql)) {
+
+                int classroomId = -1;
+                getStmt.setString(1, reservationId);
+                ResultSet rs = getStmt.executeQuery();
+                if (rs.next()) {
+                    classroomId = rs.getInt("ClassroomId");
+                } else {
+                    return false;
+                }
+
+                deleteStmt.setString(1, reservationId);
+                int rowsDeleted = deleteStmt.executeUpdate();
+
+                updateStmt.setInt(1, classroomId);
+                updateStmt.executeUpdate();
+
+                conn.commit();
+                return rowsDeleted > 0;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                System.out.println("deleteReservation: Failed to delete reservation, rolling back.");
+                e.printStackTrace();
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("deleteReservation: Connection error.");
             e.printStackTrace();
             return false;
         }
