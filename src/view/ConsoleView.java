@@ -199,11 +199,13 @@ public class ConsoleView {
 
             while (true) {
                 System.out.println("\n=== Principal Menu ===");
-                System.out.print("\n--- User :"+ currentUser.getUserName() + " --- \n ");
+                System.out.print("\n--- User :"+ currentUser.getUserName() + " ---  ");
                 System.out.println("1. Reserve a Classroom");
                 System.out.println("2. Cancel Classroom Reservation");
                 System.out.println("3. View Reserved Classrooms");
-                System.out.println("4. Export Metrics");
+                if(currentUser.getUserName()!="^e.*") {
+                    System.out.println("4. Export Metrics");
+                }
                 System.out.println("5. Log Out");
 
                 if (currentUser.getUserName().startsWith("a")) {
