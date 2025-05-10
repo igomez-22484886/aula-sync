@@ -23,13 +23,9 @@ public class ConsoleView {
 
     public void showInitialMenu() {
         try {
-            boolean institutionExists = consoleViewModel.checkForInstitution();
-
-            if (!institutionExists) {
-                System.out.println("Warning: No educational institution account found. Please create one to use the application properly.");
-            }
-
             while (true) {
+                boolean institutionExists = consoleViewModel.checkForInstitution();
+
                 System.out.println("\n=== Aula-Sync Console Menu ===");
 
                 if (institutionExists) {
@@ -39,7 +35,7 @@ public class ConsoleView {
                 }
 
                 System.out.println("3. Exit");
-                System.out.print("Select an option: ");
+                System.out.println("Select an option: ");
 
                 if (!scanner.hasNextInt()) {
                     System.out.println("Error: Please enter a valid number.");
@@ -77,19 +73,20 @@ public class ConsoleView {
         }
     }
 
+
     private void showSignUpMenu() {
         try {
-            System.out.print("\nEnter your corporate email: ");
+            System.out.println("\nEnter your corporate email: ");
             String email = scanner.nextLine();
             if (email == null || email.trim().isEmpty()) {
-                System.out.println("Error - Email cannot be empty.");
+                System.out.println("Error: Email cannot be empty.");
                 return;
             }
 
-            System.out.print("Enter your password: ");
+            System.out.println("Enter your password: ");
             String password = scanner.nextLine();
             if (password == null || password.trim().isEmpty()) {
-                System.out.println("Error - Password cannot be empty.");
+                System.out.println("Error: Password cannot be empty.");
                 return;
             }
 
@@ -109,72 +106,52 @@ public class ConsoleView {
     private void showRegisterMenu() {
         try {
             System.out.println("\nSelect the type of user to register:");
-            System.out.println("1. Student");
-            System.out.println("2. Teacher");
-            System.out.println("3. Educational Institution");
-            System.out.print("Enter your choice: ");
+            System.out.println("1. Educational Institution");
+            System.out.println("Enter your choice: ");
 
             int userType = -1;
             if (scanner.hasNextInt()) {
                 userType = scanner.nextInt();
                 scanner.nextLine();
             } else {
-                System.out.println("Error - Invalid input.");
+                System.out.println("Error: Invalid input.");
                 scanner.nextLine();
                 return;
             }
 
-            if ((userType == 1 || userType == 2) && !consoleViewModel.checkForInstitution()) {
-                System.out.println("Registration blocked - No institution exists. Please register an institution first.");
-                return;
-            }
-
-            if (userType == 3 && consoleViewModel.checkForInstitution()) {
-                System.out.println("Error - An institution account already exists. You cannot register another one.");
-                return;
-            }
-
-            System.out.print("Enter your email: ");
+            System.out.println("Enter your email: ");
             String email = scanner.nextLine();
             if (email == null || email.trim().isEmpty()) {
-                System.out.println("Error - Email cannot be empty.");
+                System.out.println("Error: Email cannot be empty.");
                 return;
             }
 
-            System.out.print("Create a password: ");
+            System.out.println("Create a password: ");
             String password = scanner.nextLine();
             if (password == null || password.trim().isEmpty()) {
-                System.out.println("Error - Password cannot be empty.");
+                System.out.println("Error: Password cannot be empty.");
                 return;
             }
 
-            System.out.print("Confirm your password: ");
+            System.out.println("Confirm your password: ");
             String confirmPassword = scanner.nextLine();
             if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
-                System.out.println("Error - Confirm password cannot be empty.");
+                System.out.println("Error: Confirm password cannot be empty.");
                 return;
             }
 
             if (!password.equals(confirmPassword)) {
-                System.out.println("Error - Passwords do not match.");
+                System.out.println("Error: Passwords do not match.");
                 return;
             }
 
             boolean result;
 
-            switch (userType) {
-                case 1:
-                    result = consoleViewModel.registerStudent(email, password);
-                    break;
-                case 2:
-                    result = consoleViewModel.registerTeacher(email, password);
-                    break;
-                case 3:
-                    result = consoleViewModel.registerInstitution(email, password);
-                    break;
-                default:
-                    System.out.println("Error - Invalid user type.");
-                    return;
+            if (userType == 1) {
+                result = consoleViewModel.registerInstitution(email, password);
+            } else {
+                System.out.println("Error: Invalid user type.");
+                return;
             }
 
             if (result) {
@@ -225,10 +202,10 @@ public class ConsoleView {
                     }
                 }
 
-                System.out.print("Enter your choice: ");
+                System.out.println("Enter your choice: ");
 
                 if (!scanner.hasNextInt()) {
-                    System.out.println("Error - Please enter a valid number.");
+                    System.out.println("Error: Please enter a valid number.");
                     scanner.nextLine();
                     continue;
                 }
@@ -255,7 +232,7 @@ public class ConsoleView {
                         if (!isStudent) {
                             exportMetrics();
                         } else {
-                            System.out.println("Error - You are a student, ask your teacher for metrics");
+                            System.out.println("Error: You are a student, ask your teacher for metrics");
                         }
                         break;
                     case 5:
@@ -270,9 +247,9 @@ public class ConsoleView {
                         break;
                     case 6:
                         if (isAdmin) {
-                            System.out.print("Enter teacher email: ");
+                            System.out.println("Enter teacher email: ");
                             String teacherEmail = scanner.nextLine();
-                            System.out.print("Enter teacher password: ");
+                            System.out.println("Enter teacher password: ");
                             String teacherPassword = scanner.nextLine();
                             if (consoleViewModel.registerTeacher(teacherEmail, teacherPassword)) {
                                 System.out.println("Teacher registered successfully.");
@@ -285,9 +262,9 @@ public class ConsoleView {
                         break;
                     case 7:
                         if (isPrincipal || isAdmin) {
-                            System.out.print("Enter student email: ");
+                            System.out.println("Enter student email: ");
                             String studentEmail = scanner.nextLine();
-                            System.out.print("Enter student password: ");
+                            System.out.println("Enter student password: ");
                             String studentPassword = scanner.nextLine();
                             if (consoleViewModel.registerStudent(studentEmail, studentPassword)) {
                                 System.out.println("Student registered successfully.");
@@ -309,7 +286,7 @@ public class ConsoleView {
 
     private void reserveClassroom() {
         try {
-            System.out.print("\nEnter the classroom ID to reserve: ");
+            System.out.println("\nEnter the classroom ID to reserve: ");
             String classRoomId = scanner.nextLine();
 
             if (!classRoomId.matches("^[1-4][1-3][0-9]{2}$")) {
@@ -317,7 +294,7 @@ public class ConsoleView {
                 return;
             }
 
-            System.out.print("Enter reservation date (yyyy-MM-dd): ");
+            System.out.println("Enter reservation date (yyyy-MM-dd): ");
             String dateStr = scanner.nextLine();
             LocalDate date = LocalDate.parse(dateStr);
 
@@ -326,10 +303,10 @@ public class ConsoleView {
                 return;
             }
 
-            System.out.print("Enter start time (HH:mm): ");
+            System.out.println("Enter start time (HH:mm): ");
             LocalTime start = LocalTime.parse(scanner.nextLine());
 
-            System.out.print("Enter end time (HH:mm): ");
+            System.out.println("Enter end time (HH:mm): ");
             LocalTime end = LocalTime.parse(scanner.nextLine());
 
             if (end.isBefore(start)) {
@@ -365,7 +342,7 @@ public class ConsoleView {
         try {
             System.out.println("\nEnter the reservation ID to cancel: ");
             String reservationId = scanner.nextLine();
-            consoleViewModel.cancelClassroomReservation(reservationId);
+            consoleViewModel.cancelOwnClassroomReservation(reservationId, currentUserId);
         } catch (Exception e) {
             System.out.println("cancelClassroomReservation: Error occurred while canceling the reservation. Please try again.");
         }
@@ -378,7 +355,7 @@ public class ConsoleView {
             if (reservedClassrooms.isEmpty()) {
                 System.out.println("No classrooms are currently reserved.");
             } else {
-                System.out.println("\nReserved Classrooms:\n" + reservedClassrooms);
+                System.out.println("Reserved Classrooms:" + reservedClassrooms);
             }
         } catch (Exception e) {
             System.out.println("viewReservedClassrooms: Error occurred while fetching reserved classrooms. Please try again.");

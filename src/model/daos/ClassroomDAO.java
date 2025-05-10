@@ -19,19 +19,25 @@ public class ClassroomDAO {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
+            // System.out.println("insertClassroom Preparing to insert classroom: " + classroom);
+
             stmt.setInt(1, classroom.getClassroomId());
             stmt.setInt(2, classroom.getCapacity());
             stmt.setString(3, classroom.getStatus().getLabel());
             int rowsInserted = stmt.executeUpdate();
 
+            // System.out.println("insertClassroom Rows inserted: " + rowsInserted);
+
             if (rowsInserted > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         classroom.setId(generatedKeys.getInt(1));
+                        // System.out.println("insertClassroom Generated ID: " + classroom.getId());
                     }
                 }
             }
         } catch (SQLException e) {
+            System.out.println("insertClassroom SQL Exception: " + e.getMessage());
         }
     }
 
@@ -39,6 +45,8 @@ public class ClassroomDAO {
         String sql = "SELECT * FROM ClassroomTable WHERE ClassroomId = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // System.out.println("getClassroomById Looking for classroom with ID: " + id);
 
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -49,11 +57,14 @@ public class ClassroomDAO {
                             ClassroomStatus.fromLabel(rs.getString("Status"))
                     );
                     classroom.setId(rs.getInt("Id"));
+                    // System.out.println("getClassroomById Classroom found: " + classroom);
                     return classroom;
                 } else {
+                    // System.out.println("getClassroomById No classroom found with ID: " + id);
                 }
             }
         } catch (SQLException e) {
+            System.out.println("getClassroomById SQL Exception: " + e.getMessage());
         }
         return null;
     }
@@ -65,14 +76,21 @@ public class ClassroomDAO {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
+            // System.out.println("getAllClassrooms Fetching all classrooms...");
+
             while (rs.next()) {
-                classrooms.add(new Classroom(
+                Classroom classroom = new Classroom(
                         rs.getInt("ClassroomId"),
                         rs.getInt("Capacity"),
                         ClassroomStatus.fromLabel(rs.getString("Status"))
-                ));
+                );
+                classroom.setId(rs.getInt("Id"));
+                classrooms.add(classroom);
             }
+
+            // System.out.println("getAllClassrooms Total classrooms retrieved: " + classrooms.size());
         } catch (SQLException e) {
+            System.out.println("getAllClassrooms SQL Exception: " + e.getMessage());
         }
         return classrooms;
     }
@@ -82,12 +100,17 @@ public class ClassroomDAO {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // System.out.println("updateClassroom Updating classroom: " + classroom);
+
             stmt.setInt(1, classroom.getCapacity());
             stmt.setString(2, classroom.getStatus().getLabel());
             stmt.setInt(3, classroom.getClassroomId());
             int updated = stmt.executeUpdate();
+
+            // System.out.println("updateClassroom Rows updated: " + updated);
             return updated > 0;
         } catch (SQLException e) {
+            System.out.println("updateClassroom SQL Exception: " + e.getMessage());
             return false;
         }
     }
@@ -97,10 +120,15 @@ public class ClassroomDAO {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // System.out.println("deleteClassroom Deleting classroom with ID: " + id);
+
             stmt.setInt(1, id);
             int deleted = stmt.executeUpdate();
+
+            // System.out.println("deleteClassroom Rows deleted: " + deleted);
             return deleted > 0;
         } catch (SQLException e) {
+            System.out.println("deleteClassroom SQL Exception: " + e.getMessage());
             return false;
         }
     }
@@ -110,10 +138,15 @@ public class ClassroomDAO {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // System.out.println("updateClassroomStatus Updating status of classroom ID " + classroomId + " to " + classroomStatus);
+
             stmt.setString(1, classroomStatus.getLabel());
             stmt.setInt(2, classroomId);
             int rows = stmt.executeUpdate();
+
+            // System.out.println("updateClassroomStatus Rows affected: " + rows);
         } catch (SQLException e) {
+             System.out.println("updateClassroomStatus SQL Exception: " + e.getMessage());
         }
     }
 }
