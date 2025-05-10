@@ -12,128 +12,222 @@ import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ConsoleViewModel {
     UserDAO userDAO = new UserDAO();
     ReservationDAO reservationDAO = new ReservationDAO();
     ClassroomDAO classroomDAO = new ClassroomDAO();
 
+    private static final Logger LOGGER = Logger.getLogger(ConsoleViewModel.class.getName());
+
     public boolean signUp(String email, String password) {
-        return userDAO.checkCredentials(email, password);
+        // System.out.println("signUp: Checking credentials for email: " + email);
+        boolean result = userDAO.checkCredentials(email, password);
+        // System.out.println("signUp: Credentials check result: " + result);
+        return result;
     }
 
     public boolean registerStudent(String email, String password) {
-        System.out.println("registerStudent: Checking if institution exists...");
+        // System.out.println("registerStudent: Registering student with email: " + email);
         if (!userDAO.checkInstitutionExists()) {
-            System.out.println("registerStudent: Registration blocked - No institution found.");
+            // System.out.println("registerStudent: No institution exists, registration failed");
             return false;
         }
 
         String id = userDAO.extractUsernameFromEmail(email);
+        // System.out.println("registerStudent: Extracted ID from email: " + id);
         String userName = "e" + id;
-        return userDAO.registerUser(new User(Integer.parseInt(id), userName, email, password));
+        // System.out.println("registerStudent: Generated username: " + userName);
+        boolean result = userDAO.registerUser(new User(Integer.parseInt(id), userName, email, password));
+        // System.out.println("registerStudent: Student registration result: " + result);
+        return result;
     }
 
     public boolean registerTeacher(String email, String password) {
-        System.out.println("registerTeacher: Checking if institution exists...");
+        // System.out.println("registerTeacher: Registering teacher with email: " + email);
         if (!userDAO.checkInstitutionExists()) {
-            System.out.println("registerTeacher: Registration blocked - No institution found.");
+            // System.out.println("registerTeacher: No institution exists, registration failed");
             return false;
         }
 
         String id = userDAO.extractUsernameFromEmail(email);
+        // System.out.println("registerTeacher: Extracted ID from email: " + id);
         String userName = "p" + id;
-        return userDAO.registerUser(new User(Integer.parseInt(id), userName, email, password));
+        // System.out.println("registerTeacher: Generated username: " + userName);
+        boolean result = userDAO.registerUser(new User(Integer.parseInt(id), userName, email, password));
+        // System.out.println("registerTeacher: Teacher registration result: " + result);
+        return result;
     }
 
     public boolean registerInstitution(String email, String password) {
+        // System.out.println("registerInstitution: Registering institution with email: " + email);
         if (userDAO.checkInstitutionExists()) {
-            System.out.println("registerInstitution: Error - An institution account already exists. Cannot register another one.");
+            // System.out.println("registerInstitution: Institution already exists, registration failed");
             return false;
         }
         String id = userDAO.extractUsernameFromEmail(email);
+        // System.out.println("registerInstitution: Extracted ID from email: " + id);
         String userName = "a" + id;
-        return userDAO.registerUser(new User(Integer.parseInt(id), userName, email, password));
+        // System.out.println("registerInstitution: Generated username: " + userName);
+        boolean result = userDAO.registerUser(new User(Integer.parseInt(id), userName, email, password));
+        // System.out.println("registerInstitution: Institution registration result: " + result);
+        return result;
     }
 
     public boolean checkForInstitution() {
-        return userDAO.checkInstitutionExists();
+        // System.out.println("checkForInstitution: Checking if institution exists");
+        boolean result = userDAO.checkInstitutionExists();
+        // System.out.println("checkForInstitution: Institution exists: " + result);
+        return result;
     }
 
     public boolean reserveClassroom(String userIdStr, String classRoomIdStr, String dateStr, String startStr, String endStr) {
+        // System.out.println("reserveClassroom: Creating reservation with userId: " + userIdStr + ", classroomId: " + classRoomIdStr + ", date: " + dateStr + ", start: " + startStr + ", end: " + endStr);
         try {
             int userId = Integer.parseInt(userIdStr);
             int classroomId = Integer.parseInt(classRoomIdStr);
+            // System.out.println("reserveClassroom: Parsed userId: " + userId + ", classroomId: " + classroomId);
             Date reservationDate = Date.valueOf(dateStr);
             Time startTime = Time.valueOf(startStr + ":00");
             Time endTime = Time.valueOf(endStr + ":00");
+            // System.out.println("reserveClassroom: Converted date: " + reservationDate + ", startTime: " + startTime + ", endTime: " + endTime);
 
-            return reservationDAO.createReservation(userId, classroomId, reservationDate, startTime, endTime);
+            boolean result = reservationDAO.createReservation(userId, classroomId, reservationDate, startTime, endTime);
+            // System.out.println("reserveClassroom: Reservation creation result: " + result);
+            return result;
 
         } catch (Exception e) {
-            System.out.println("reserveClassroom: Error occurred while reserving classroom. Please try again.");
-            e.printStackTrace();
+            System.out.println("reserveClassroom: Error creating reservation: " + e.getMessage());
             return false;
         }
     }
 
     public void cancelClassroomReservation(String reservationId) {
+        // System.out.println("cancelClassroomReservation: Cancelling reservation with ID: " + reservationId);
         try {
             int id = Integer.parseInt(reservationId);
+            // System.out.println("cancelClassroomReservation: Parsed reservation ID: " + id);
             boolean success = reservationDAO.cancelReservation(id);
 
             if (success) {
-                System.out.println("cancelClassroomReservation: Reservation canceled successfully.");
+                System.out.println("Reservation canceled successfully.");
             } else {
-                System.out.println("cancelClassroomReservation: Failed to cancel reservation.");
+                System.out.println("Failed to cancel reservation.");
             }
 
         } catch (Exception e) {
-            System.out.println("cancelClassroomReservation: Error occurred while cancelling reservation.");
-            e.printStackTrace();
+            System.out.println("cancelClassroomReservation: Error cancelling reservation: " + e.getMessage());
+        }
+    }
+
+    public void cancelOwnClassroomReservation(String reservationId, String userId) {
+        // System.out.println("cancelClassroomReservation: Cancelling reservation with ID: " + reservationId);
+        try {
+            int id = Integer.parseInt(reservationId);
+            // System.out.println("cancelClassroomReservation: Parsed reservation ID: " + id);
+            boolean success = reservationDAO.cancelOwnReservation(id, userId);
+
+            if (success) {
+                System.out.println("Reservation canceled successfully.");
+            } else {
+                System.out.println("Failed to cancel reservation. Ask your teacher for help");
+            }
+
+        } catch (Exception e) {
+            System.out.println("cancelOwnClassroomReservation: Error cancelling reservation: " + e.getMessage());
         }
     }
 
     public List<String> getReservedClassrooms() {
+        // System.out.println("getReservedClassrooms: Retrieving all reservations");
         try {
-            return reservationDAO.getAllReservations();
+            List<String> reservations = reservationDAO.getAllReservations();
+            // System.out.println("getReservedClassrooms: Retrieved " + reservations.size() + " reservations");
+            return reservations;
         } catch (Exception e) {
-            System.out.println("getReservedClassrooms: Failed to get reserved classrooms.");
-            e.printStackTrace();
+            System.out.println("getReservedClassrooms: Error retrieving reservations: " + e.getMessage());
             return new ArrayList<>();
         }
     }
 
     public void exportUserMetrics() {
+        // System.out.println("exportUserMetrics: Starting export of UserTable metrics");
         try {
-            ExportMetric exportMetric = new ExportMetric();
-            exportMetric.exportTableToCSV("UserTable");
-            System.out.println("exportUserMetrics: User metrics exported.");
+            ExportMetric.exportTableToCSV("UserTable");
+            // System.out.println("exportUserMetrics: User metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportUserMetrics: Failed to export user metrics.");
-            e.printStackTrace();
+            System.out.println("exportUserMetrics: Failed to export user metrics: " + e.getMessage());
         }
     }
 
     public void exportClassroomMetrics() {
+        // System.out.println("exportClassroomMetrics: Starting export of ClassroomTable metrics");
         try {
-            ExportMetric exportMetric = new ExportMetric();
-            exportMetric.exportTableToCSV("ClassroomTable");
-            System.out.println("exportClassroomMetrics: Classroom metrics exported.");
+            ExportMetric.exportTableToCSV("ClassroomTable");
+            // System.out.println("exportClassroomMetrics: Classroom metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportClassroomMetrics: Failed to export classroom metrics.");
-            e.printStackTrace();
+            System.out.println("exportClassroomMetrics: Failed to export classroom metrics: " + e.getMessage());
         }
     }
 
     public void exportReservationMetrics() {
+        // System.out.println("exportReservationMetrics: Starting export of ReservationTable metrics");
         try {
-            ExportMetric exportMetric = new ExportMetric();
-            exportMetric.exportTableToCSV("ReservationTable");
-            System.out.println("exportReservationMetrics: Reservation metrics exported.");
+            ExportMetric.exportTableToCSV("ReservationTable");
+            // System.out.println("exportReservationMetrics: Reservation metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportReservationMetrics: Failed to export reservation metrics.");
-            e.printStackTrace();
+            System.out.println("exportReservationMetrics: Failed to export reservation metrics: " + e.getMessage());
+        }
+    }
+
+    public void exportMostDemandedClassrooms() {
+        // System.out.println("exportMostDemandedClassrooms: Starting export of most demanded classrooms metrics");
+        try {
+            ExportMetric.exportMostDemandedClassrooms();
+            // System.out.println("exportMostDemandedClassrooms: Most demanded classrooms metrics exported successfully.");
+        } catch (Exception e) {
+            System.out.println("exportMostDemandedClassrooms: Failed to export most demanded classrooms metrics: " + e.getMessage());
+        }
+    }
+
+    public void exportPeakHours() {
+        // System.out.println("exportPeakHours: Starting export of peak hours metrics");
+        try {
+            ExportMetric.exportPeakHours();
+            // System.out.println("exportPeakHours: Peak hours metrics exported successfully.");
+        } catch (Exception e) {
+            System.out.println("exportPeakHours: Failed to export peak hours metrics: " + e.getMessage());
+        }
+    }
+
+    public void exportMostActiveUsers() {
+        // System.out.println("exportMostActiveUsers: Starting export of most active users metrics");
+        try {
+            ExportMetric.exportMostActiveUsers();
+            // System.out.println("exportMostActiveUsers: Most active users metrics exported successfully.");
+        } catch (Exception e) {
+            System.out.println("exportMostActiveUsers: Failed to export most active users metrics: " + e.getMessage());
+        }
+    }
+
+    public void exportAverageOccupancyTime() {
+        // System.out.println("exportAverageOccupancyTime: Starting export of average occupancy time metrics");
+        try {
+            ExportMetric.exportAverageOccupancyTime();
+            // System.out.println("exportAverageOccupancyTime: Average occupancy time metrics exported successfully.");
+        } catch (Exception e) {
+            System.out.println("exportAverageOccupancyTime: Failed to export average occupancy time metrics: " + e.getMessage());
+        }
+    }
+
+    public void exportOccupancyPercentage() {
+        // System.out.println("exportOccupancyPercentage: Starting export of occupancy percentage metrics");
+        try {
+            ExportMetric.exportOccupancyPercentage();
+            // System.out.println("exportOccupancyPercentage: Occupancy percentage metrics exported successfully.");
+        } catch (Exception e) {
+            System.out.println("exportOccupancyPercentage: Failed to export occupancy percentage metrics: " + e.getMessage());
         }
     }
 
@@ -141,8 +235,6 @@ public class ConsoleViewModel {
         try {
             return userDAO.getUserIdByEmail(email);
         } catch (Exception e) {
-            System.out.println("getUserIdByEmail: Error occurred while fetching user ID.");
-            e.printStackTrace();
             return null;
         }
     }
@@ -151,29 +243,27 @@ public class ConsoleViewModel {
         try {
             return userDAO.getUserById(id);
         } catch (Exception e) {
-            System.out.println("getUserIdByEmail: Error occurred while fetching user.");
-            e.printStackTrace();
             return null;
         }
     }
 
     public void insertSampleClassrooms() {
+        // System.out.println("insertSampleClassrooms: Starting insertion of sample classrooms");
         for (int building = 1; building <= 4; building++) {
             for (int floor = 1; floor <= 3; floor++) {
-                for (int classNumber = 1; classNumber <= 5; classNumber++) { // Puedes ajustar el rango si necesitas más aulas
-                    // Generar ID con 4 dígitos: B (1 dígito) + F (1 dígito) + NN (2 dígitos)
+                for (int classNumber = 1; classNumber <= 5; classNumber++) {
                     String id = String.format("%d%d%02d", building, floor, classNumber);
+                    // System.out.println("insertSampleClassrooms: Creating classroom with ID: " + id);
 
                     int capacity = 30; // Capacidad fija por ahora
                     ClassroomStatus status = ClassroomStatus.AVAILABLE;
-
-                    // ${insertSampleClassrooms}: Creating classroom with id " + id
-                    System.out.println("insertSampleClassrooms: Creating classroom with id " + id);
-
                     Classroom classroom = new Classroom(Integer.parseInt(id), capacity, status);
                     classroomDAO.insertClassroom(classroom);
+                    // System.out.println("insertSampleClassrooms: Inserted classroom with ID: " + id);
                 }
             }
         }
+
+        System.out.println("Completed insertion of sample classrooms");
     }
 }
