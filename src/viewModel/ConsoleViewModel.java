@@ -1,7 +1,6 @@
 package viewModel;
 
 import model.Classroom;
-import model.Classroom.ClassroomStatus;
 import model.User;
 import model.daos.ClassroomDAO;
 import model.daos.ReservationDAO;
@@ -256,8 +255,7 @@ public class ConsoleViewModel {
                     // System.out.println("insertSampleClassrooms: Creating classroom with ID: " + id);
 
                     int capacity = 30; // Capacidad fija por ahora
-                    ClassroomStatus status = ClassroomStatus.AVAILABLE;
-                    Classroom classroom = new Classroom(Integer.parseInt(id), capacity, status);
+                    Classroom classroom = new Classroom(Integer.parseInt(id), capacity);
                     classroomDAO.insertClassroom(classroom);
                     // System.out.println("insertSampleClassrooms: Inserted classroom with ID: " + id);
                 }
