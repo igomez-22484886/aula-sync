@@ -246,6 +246,18 @@ public class ConsoleViewModel {
         }
     }
 
+    public boolean createClassroom(int classroomId, int capacity) {
+        Classroom existing = classroomDAO.getClassroomById(classroomId);
+        if (existing != null) {
+            return false;
+        }
+
+        Classroom classroom = new Classroom(classroomId, capacity);
+        classroomDAO.insertClassroom(classroom);
+        return true;
+    }
+
+
     public void insertSampleClassrooms() {
         // System.out.println("insertSampleClassrooms: Starting insertion of sample classrooms");
         for (int building = 1; building <= 4; building++) {

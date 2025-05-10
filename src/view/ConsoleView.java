@@ -198,7 +198,7 @@ public class ConsoleView {
                     System.out.println("7. Create Student User");
 
                     if (isAdmin) {
-                        System.out.println("8. Insert Sample Classrooms");
+                        System.out.println("8. Insert Classrooms");
                     }
                 }
 
@@ -238,13 +238,6 @@ public class ConsoleView {
                     case 5:
                         System.out.println("Logging out...");
                         return;
-                    case 8:
-                        if (isAdmin) {
-                            consoleViewModel.insertSampleClassrooms();
-                        } else {
-                            System.out.println("Access denied.");
-                        }
-                        break;
                     case 6:
                         if (isAdmin) {
                             System.out.println("Enter teacher email: ");
@@ -273,6 +266,36 @@ public class ConsoleView {
                             }
                         } else {
                             System.out.println("Access denied.");
+                        }
+                        break;
+                    case 8:
+                        if (!isAdmin) {
+                            System.out.println("Access denied.");
+                            break;
+                        }
+
+                        System.out.println("\n1. Insert Classroom Manually");
+                        System.out.println("2. Insert Sample Classrooms");
+                        System.out.print("Choose an option: ");
+
+                        if (!scanner.hasNextInt()) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            scanner.nextLine();
+                            break;
+                        }
+
+                        int classroomOption = scanner.nextInt();
+                        scanner.nextLine();
+
+                        switch (classroomOption) {
+                            case 1:
+                                createClassroomManually();
+                                break;
+                            case 2:
+                                consoleViewModel.insertSampleClassrooms();
+                                break;
+                            default:
+                                System.out.println("Invalid option. Please try again.");
                         }
                         break;
                     default:
@@ -422,4 +445,28 @@ public class ConsoleView {
             System.out.println("exportMetrics: Error occurred while exporting metrics: " + e.getMessage());
         }
     }
+
+    public void createClassroomManually() {
+        try {
+            System.out.println("Enter Classroom ID format: BFP (Building-Floor-Position). Example: 3102 = Building 3, Floor 1, Class 02.: ");
+            int classroomId = Integer.parseInt(scanner.nextLine());
+
+            System.out.println("Enter Classroom Capacity: ");
+            int capacity = Integer.parseInt(scanner.nextLine());
+
+            boolean success = consoleViewModel.createClassroom(classroomId, capacity);
+
+            if (success) {
+                System.out.println("Classroom created successfully with ID: " + classroomId);
+            } else {
+                System.out.println("A classroom with this ID already exists.");
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter numeric values.");
+        } catch (Exception e) {
+            System.out.println("An error occurred while creating the classroom: " + e.getMessage());
+        }
+    }
+
 }
