@@ -92,15 +92,11 @@ public class ReservationDAO {
                 VALUES (?, ?, ?, ?, ?)
                 """;
 
-        String updateStatusSql = """
-                UPDATE ClassroomTable SET Status = '%s' WHERE ClassroomId = ?""".formatted(Classroom.ClassroomStatus.RESERVED.getLabel());
-
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
             conn.setAutoCommit(false);
             // System.out.println("createReservation: Starting transaction");
 
-            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql);
-                 PreparedStatement updateStmt = conn.prepareStatement(updateStatusSql)) {
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
 
                 insertStmt.setInt(1, userId);
                 insertStmt.setInt(2, classroomId);
@@ -109,10 +105,6 @@ public class ReservationDAO {
                 insertStmt.setTime(5, endTime);
                 // System.out.println("createReservation: Executing insert into ReservationTable");
                 int rowsInserted = insertStmt.executeUpdate();
-
-                updateStmt.setInt(1, classroomId);
-                // System.out.println("createReservation: Updating ClassroomTable status to RESERVED for classroom ID: " + classroomId);
-                updateStmt.executeUpdate();
 
                 conn.commit();
                 // System.out.println("createReservation: Transaction committed, reservation created successfully");

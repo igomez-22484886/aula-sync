@@ -1,3 +1,9 @@
+CREATE DATABASE aulasync;
+GO
+
+USE aulasync;
+GO
+
 -- Crear la tabla UserTable
 CREATE TABLE UserTable
 (
@@ -14,7 +20,6 @@ CREATE TABLE ClassroomTable
     Id          INT PRIMARY KEY IDENTITY(1,1),   -- Nueva columna Id con identidad
     ClassroomId INT NOT NULL,                      -- Campo ClassroomId, sin identidad
     Capacity    INT NOT NULL,                      -- Capacidad del aula
-    Status      VARCHAR(50) NOT NULL,              -- Estado del aula
     CONSTRAINT UC_ClassroomId UNIQUE (ClassroomId) -- Constraint único para ClassroomId
 );
 GO

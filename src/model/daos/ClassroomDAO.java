@@ -1,7 +1,6 @@
 package model.daos;
 
 import model.Classroom;
-import model.Classroom.ClassroomStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ public class ClassroomDAO {
     private static final Logger LOGGER = Logger.getLogger(ClassroomDAO.class.getName());
 
     public void insertClassroom(Classroom classroom) {
-        String sql = "INSERT INTO ClassroomTable (ClassroomId, Capacity, Status) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO ClassroomTable (ClassroomId, Capacity) VALUES (?, ?)";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -23,7 +22,6 @@ public class ClassroomDAO {
 
             stmt.setInt(1, classroom.getClassroomId());
             stmt.setInt(2, classroom.getCapacity());
-            stmt.setString(3, classroom.getStatus().getLabel());
             int rowsInserted = stmt.executeUpdate();
 
             // System.out.println("insertClassroom Rows inserted: " + rowsInserted);
@@ -53,8 +51,7 @@ public class ClassroomDAO {
                 if (rs.next()) {
                     Classroom classroom = new Classroom(
                             rs.getInt("ClassroomId"),
-                            rs.getInt("Capacity"),
-                            ClassroomStatus.fromLabel(rs.getString("Status"))
+                            rs.getInt("Capacity")
                     );
                     classroom.setId(rs.getInt("Id"));
                     // System.out.println("getClassroomById Classroom found: " + classroom);
@@ -81,8 +78,7 @@ public class ClassroomDAO {
             while (rs.next()) {
                 Classroom classroom = new Classroom(
                         rs.getInt("ClassroomId"),
-                        rs.getInt("Capacity"),
-                        ClassroomStatus.fromLabel(rs.getString("Status"))
+                        rs.getInt("Capacity")
                 );
                 classroom.setId(rs.getInt("Id"));
                 classrooms.add(classroom);
@@ -96,15 +92,14 @@ public class ClassroomDAO {
     }
 
     public boolean updateClassroom(Classroom classroom) {
-        String sql = "UPDATE ClassroomTable SET Capacity = ?, Status = ? WHERE ClassroomId = ?";
+        String sql = "UPDATE ClassroomTable SET Capacity = ? WHERE ClassroomId = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // System.out.println("updateClassroom Updating classroom: " + classroom);
 
             stmt.setInt(1, classroom.getCapacity());
-            stmt.setString(2, classroom.getStatus().getLabel());
-            stmt.setInt(3, classroom.getClassroomId());
+            stmt.setInt(2, classroom.getClassroomId());
             int updated = stmt.executeUpdate();
 
             // System.out.println("updateClassroom Rows updated: " + updated);
@@ -130,23 +125,6 @@ public class ClassroomDAO {
         } catch (SQLException e) {
             System.out.println("deleteClassroom SQL Exception: " + e.getMessage());
             return false;
-        }
-    }
-
-    public void updateClassroomStatus(int classroomId, ClassroomStatus classroomStatus) {
-        String sql = "UPDATE ClassroomTable SET Status = ? WHERE ClassroomId = ?";
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            // System.out.println("updateClassroomStatus Updating status of classroom ID " + classroomId + " to " + classroomStatus);
-
-            stmt.setString(1, classroomStatus.getLabel());
-            stmt.setInt(2, classroomId);
-            int rows = stmt.executeUpdate();
-
-            // System.out.println("updateClassroomStatus Rows affected: " + rows);
-        } catch (SQLException e) {
-             System.out.println("updateClassroomStatus SQL Exception: " + e.getMessage());
         }
     }
 }
