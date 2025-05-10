@@ -218,15 +218,13 @@ public class ReservationDAO {
         // System.out.println("cancelReservation: Cancelling reservation ID: " + reservationId);
         String getClassroomSql = "SELECT ClassroomId FROM ReservationTable WHERE ReservationId = ?";
         String deleteSql = "DELETE FROM ReservationTable WHERE ReservationId = ?";
-        String updateStatusSql = "UPDATE ClassroomTable SET Status = 'Available' WHERE ClassroomId = ?";
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
             conn.setAutoCommit(false);
             // System.out.println("cancelReservation: Starting transaction");
 
             try (PreparedStatement getStmt = conn.prepareStatement(getClassroomSql);
-                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
-                 PreparedStatement updateStmt = conn.prepareStatement(updateStatusSql)) {
+                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
 
                 getStmt.setInt(1, reservationId);
                 // System.out.println("cancelReservation: Checking if reservation ID " + reservationId + " exists");
@@ -244,10 +242,6 @@ public class ReservationDAO {
                 deleteStmt.setInt(1, reservationId);
                 // System.out.println("cancelReservation: Deleting reservation ID: " + reservationId);
                 int rowsDeleted = deleteStmt.executeUpdate();
-
-                updateStmt.setInt(1, classroomId);
-                // System.out.println("cancelReservation: Updating classroom ID " + classroomId + " status to Available");
-                updateStmt.executeUpdate();
 
                 conn.commit();
                 // System.out.println("cancelReservation: Transaction committed, reservation ID " + reservationId + " canceled successfully");
