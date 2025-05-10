@@ -30,11 +30,14 @@ public class ConsoleView {
             }
 
             while (true) {
-                System.out.println("\n=== AulaSync Console Menu ===");
-                System.out.println("1. Sign Up");
-                if (!institutionExists) {
+                System.out.println("\n=== Aula-Sync Console Menu ===");
+
+                if (institutionExists) {
+                    System.out.println("1. Sign Up");
+                } else {
                     System.out.println("2. Register User");
                 }
+
                 System.out.println("3. Exit");
                 System.out.print("Select an option: ");
 
@@ -49,7 +52,11 @@ public class ConsoleView {
 
                 switch (option) {
                     case 1:
-                        showSignUpMenu();
+                        if (institutionExists) {
+                            showSignUpMenu();
+                        } else {
+                            System.out.println("Error: Sign Up option is disabled because there is not an institution registered.");
+                        }
                         break;
                     case 2:
                         if (!institutionExists) {
@@ -185,16 +192,24 @@ public class ConsoleView {
             currentUser = consoleViewModel.getUserById(currentUserId);
 
             while (true) {
+                boolean isAdmin = currentUser.getUserName().startsWith("a");
+                boolean isPrincipal = currentUser.getUserName().startsWith("p");
+                boolean isStudent = currentUser.getUserName().startsWith("e");
+
                 System.out.println("\n=== Principal Menu ===");
                 System.out.println("--- User: " + currentUser.getUserName() + " ---");
                 System.out.println("1. Reserve a Classroom");
-                System.out.println("2. Cancel Classroom Reservation");
+                if (!isStudent) {
+                    System.out.println("2. Cancel Classroom Reservation");
+                } else {
+                    System.out.println("2. Cancel Own Classroom Reservation");
+                }
                 System.out.println("3. View Reserved Classrooms");
-                System.out.println("4. Export Metrics");
+                if (!isStudent) {
+                    System.out.println("4. Export Metrics");
+                }
                 System.out.println("5. Log Out");
 
-                boolean isAdmin = currentUser.getUserName().startsWith("a");
-                boolean isPrincipal = currentUser.getUserName().startsWith("p");
 
                 if (isAdmin || isPrincipal) {
                     System.out.println("\n--- Administrator Tools: ---");
@@ -227,13 +242,21 @@ public class ConsoleView {
                         reserveClassroom();
                         break;
                     case 2:
-                        cancelClassroomReservation();
+                        if (!isStudent) {
+                            cancelClassroomReservation();
+                        } else {
+                            cancelOwnClassroomReservation();
+                        }
                         break;
                     case 3:
                         viewReservedClassrooms();
                         break;
                     case 4:
-                        exportMetrics();
+                        if (!isStudent) {
+                            exportMetrics();
+                        } else {
+                            System.out.println("Error - You are a student, ask your teacher for metrics");
+                        }
                         break;
                     case 5:
                         System.out.println("Logging out...");
@@ -338,6 +361,16 @@ public class ConsoleView {
         }
     }
 
+    public void cancelOwnClassroomReservation() {
+        try {
+            System.out.println("\nEnter the reservation ID to cancel: ");
+            String reservationId = scanner.nextLine();
+            consoleViewModel.cancelClassroomReservation(reservationId);
+        } catch (Exception e) {
+            System.out.println("cancelClassroomReservation: Error occurred while canceling the reservation. Please try again.");
+        }
+    }
+
     public void viewReservedClassrooms() {
         try {
             List<String> reservedClassrooms = consoleViewModel.getReservedClassrooms();
@@ -355,24 +388,49 @@ public class ConsoleView {
     public void exportMetrics() {
         try {
             System.out.println("\nChoose the metrics to export:");
-            System.out.println("1. User metrics");
-            System.out.println("2. Classroom metrics");
-            System.out.println("3. Reservation metrics");
-            System.out.println("4. Export all");
+            System.out.println("1. Most Demanded Classrooms (Daily, Weekly, Monthly)");
+            System.out.println("2. Peak Hours");
+            System.out.println("3. Most Active Users");
+            System.out.println("4. Average Occupancy Time");
+            System.out.println("5. Occupancy Percentage");
+            System.out.println("6. Raw UserTable Data");
+            System.out.println("7. Raw ClassroomTable Data");
+            System.out.println("8. Raw ReservationTable Data");
+            System.out.println("9. Export All Metrics and Tables");
 
             String option = scanner.nextLine();
 
             switch (option) {
                 case "1":
-                    consoleViewModel.exportUserMetrics();
+                    consoleViewModel.exportMostDemandedClassrooms();
                     break;
                 case "2":
-                    consoleViewModel.exportClassroomMetrics();
+                    consoleViewModel.exportPeakHours();
                     break;
                 case "3":
-                    consoleViewModel.exportReservationMetrics();
+                    consoleViewModel.exportMostActiveUsers();
                     break;
                 case "4":
+                    consoleViewModel.exportAverageOccupancyTime();
+                    break;
+                case "5":
+                    consoleViewModel.exportOccupancyPercentage();
+                    break;
+                case "6":
+                    consoleViewModel.exportUserMetrics();
+                    break;
+                case "7":
+                    consoleViewModel.exportClassroomMetrics();
+                    break;
+                case "8":
+                    consoleViewModel.exportReservationMetrics();
+                    break;
+                case "9":
+                    consoleViewModel.exportMostDemandedClassrooms();
+                    consoleViewModel.exportPeakHours();
+                    consoleViewModel.exportMostActiveUsers();
+                    consoleViewModel.exportAverageOccupancyTime();
+                    consoleViewModel.exportOccupancyPercentage();
                     consoleViewModel.exportUserMetrics();
                     consoleViewModel.exportClassroomMetrics();
                     consoleViewModel.exportReservationMetrics();
@@ -384,7 +442,7 @@ public class ConsoleView {
 
             System.out.println("Metrics exported successfully!");
         } catch (Exception e) {
-            System.out.println("exportMetrics: Error occurred while exporting metrics. Please try again.");
+            System.out.println("exportMetrics: Error occurred while exporting metrics: " + e.getMessage());
         }
     }
 }
