@@ -45,6 +45,22 @@ public class User {
         this.password = password;
     }
 
+    public int getPriority() {
+        if (userName == null || userName.isEmpty()) {
+            return 0;
+        }
+        char firstChar = userName.toLowerCase().charAt(0);
+        return switch (firstChar) {
+            case 'e' ->
+                    1;
+            case 'p' ->
+                    2;
+            case 'a' ->
+                    3;
+            default -> 0;
+        };
+    }
+
     @Override
     public String toString() {
         return "User{" +
