@@ -12,17 +12,17 @@ public class ExportMetric {
 
     private static void createExportFolder() {
         File folder = new File(EXPORT_FOLDER);
-        System.out.println("createExportFolder: Checking if export folder exists at " + folder.getAbsolutePath());
+        // System.out.println("createExportFolder: Checking if export folder exists at " + folder.getAbsolutePath());
 
         if (!folder.exists()) {
             boolean created = folder.mkdirs();
             if (created) {
-                System.out.println("createExportFolder: Folder '" + EXPORT_FOLDER + "' created successfully.");
+                // System.out.println("createExportFolder: Folder '" + EXPORT_FOLDER + "' created successfully.");
             } else {
-                System.err.println("createExportFolder: Failed to create folder '" + EXPORT_FOLDER + "'.");
+                // 1System.err.println("createExportFolder: Failed to create folder '" + EXPORT_FOLDER + "'.");
             }
         } else {
-            System.out.println("createExportFolder: Folder '" + EXPORT_FOLDER + "' already exists.");
+            // System.out.println("createExportFolder: Folder '" + EXPORT_FOLDER + "' already exists.");
         }
     }
 
@@ -57,10 +57,10 @@ public class ExportMetric {
                 csvWriter.append("\n");
             }
 
-            System.out.println("Table " + tableName + " exported successfully to " + fileName);
+            // System.out.println("Table " + tableName + " exported successfully to " + fileName);
 
         } catch (SQLException | IOException e) {
-            System.out.println("Error exporting CSV: " + e);
+            // System.out.println("Error exporting CSV: " + e);
         }
     }
 
@@ -137,13 +137,15 @@ public class ExportMetric {
         createExportFolder();
         String datePrefix = LocalDate.now().toString();
 
-        String query = "SELECT c.ClassroomId, AVG(DATEDIFF(MINUTE, CAST(CONCAT(r.ReservationDate, ' ', r.StartTime) AS DATETIME), " +
-                "CAST(CONCAT(r.ReservationDate, ' ', r.EndTime) AS DATETIME))) as avg_occupancy_minutes " +
+        String query = "SELECT c.ClassroomId, AVG(DATEDIFF(MINUTE, " +
+                "CAST(r.ReservationDate AS DATETIME) + CAST(r.StartTime AS DATETIME), " +
+                "CAST(r.ReservationDate AS DATETIME) + CAST(r.EndTime AS DATETIME))) as avg_occupancy_time " +
                 "FROM ClassroomTable c " +
                 "JOIN ReservationTable r ON c.ClassroomId = r.ClassroomId " +
                 "WHERE YEAR(r.ReservationDate) = ? AND MONTH(r.ReservationDate) = ? " +
                 "GROUP BY c.ClassroomId " +
-                "ORDER BY avg_occupancy_minutes DESC";
+                "ORDER BY avg_occupancy_time DESC";
+
         LocalDate today = LocalDate.now();
         exportQueryToCSV(query, EXPORT_FOLDER + "average-occupancy-time-" + datePrefix + ".csv",
                 "Average Occupancy Time (Minutes)",
@@ -155,14 +157,16 @@ public class ExportMetric {
         String datePrefix = LocalDate.now().toString();
 
         String query = "SELECT c.ClassroomId, " +
-                "(SUM(DATEDIFF(MINUTE, CAST(CONCAT(r.ReservationDate, ' ', r.StartTime) AS DATETIME), " +
-                "CAST(CONCAT(r.ReservationDate, ' ', r.EndTime) AS DATETIME))) * 100.0) / " +
+                "(SUM(DATEDIFF(MINUTE, " +
+                "CAST(r.ReservationDate AS DATETIME) + CAST(r.StartTime AS DATETIME), " +
+                "CAST(r.ReservationDate AS DATETIME) + CAST(r.EndTime AS DATETIME))) * 100.0) / " +
                 "(COUNT(DISTINCT r.ReservationDate) * 12 * 60) as occupancy_percentage " +
                 "FROM ClassroomTable c " +
                 "JOIN ReservationTable r ON c.ClassroomId = r.ClassroomId " +
                 "WHERE YEAR(r.ReservationDate) = ? AND MONTH(r.ReservationDate) = ? " +
                 "GROUP BY c.ClassroomId " +
                 "ORDER BY occupancy_percentage DESC";
+
         LocalDate today = LocalDate.now();
         exportQueryToCSV(query, EXPORT_FOLDER + "occupancy-percentage-" + datePrefix + ".csv",
                 "Occupancy Percentage", new Object[]{today.getYear(), today.getMonthValue()});
@@ -200,14 +204,14 @@ public class ExportMetric {
                     csvWriter.append("\n");
                 }
 
-                System.out.println(metricName + " exported successfully to " + fileName);
+                // System.out.println(metricName + " exported successfully to " + fileName);
 
             } catch (IOException e) {
-                System.out.println("Error writing CSV for " + metricName + ": " + e);
+                // System.out.println("Error writing CSV for " + metricName + ": " + e);
             }
 
         } catch (SQLException e) {
-            System.out.println("Error executing query for " + metricName + ": " + e);
+            // System.out.println("Error executing query for " + metricName + ": " + e);
         }
     }
 
