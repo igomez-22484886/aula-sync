@@ -276,4 +276,11 @@ public class ConsoleViewModel {
 
         System.out.println("Completed insertion of sample classrooms");
     }
+
+    public int getClassroomCount() {
+        // System.out.println("getClassroomCount: Retrieving classroom count");
+        List<Classroom> classrooms = classroomDAO.getAllClassrooms();
+        // System.out.println("getClassroomCount: Total classrooms retrieved: " + classrooms.size());
+        return classrooms.size();
+    }
 }

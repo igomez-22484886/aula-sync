@@ -69,7 +69,7 @@ public class ConsoleView {
                 }
             }
         } catch (Exception e) {
-            System.out.println("showInitialMenu: Error occurred while displaying the menu. Please try again.");
+            System.out.println("Error occurred while displaying the menu. Please try again.");
         }
     }
 
@@ -99,7 +99,7 @@ public class ConsoleView {
                 System.out.println("Sign-up failed. Please try again.");
             }
         } catch (Exception e) {
-            System.out.println("showSignUpMenu: Error occurred during the sign-up process. Please try again.");
+            System.out.println("Error occurred during the sign-up process. Please try again.");
         }
     }
 
@@ -160,7 +160,7 @@ public class ConsoleView {
                 System.out.println("Registration failed. Please try again.");
             }
         } catch (Exception e) {
-            System.out.println("showRegisterMenu: Error occurred during the registration process. Please try again.");
+            System.out.println("Error occurred during the registration process. Please try again.");
         }
     }
 
@@ -230,9 +230,15 @@ public class ConsoleView {
                         break;
                     case 4:
                         if (!isStudent) {
+                            if (consoleViewModel.getClassroomCount() > 0) {
+                                System.out.println("Exporting metrics...");
+                            } else {
+                                System.out.println("You can not export metrics because there are no classrooms registered.");
+                                break;
+                            }
                             exportMetrics();
                         } else {
-                            System.out.println("Error: You are a student, ask your teacher for metrics");
+                            System.out.println("You are a student, ask your teacher for metrics");
                         }
                         break;
                     case 5:
@@ -303,7 +309,7 @@ public class ConsoleView {
                 }
             }
         } catch (Exception e) {
-            System.out.println("showPrincipalMenu: Error occurred while displaying the principal menu. Please try again.");
+            System.out.println("Error occurred while displaying the principal menu. Please try again.");
         }
     }
 
@@ -345,9 +351,9 @@ public class ConsoleView {
                 System.out.println("Failed to reserve the classroom. Ask for support!");
             }
         } catch (DateTimeParseException e) {
-            System.out.println("reserveClassroom: Invalid date or time format.");
+            System.out.println("Invalid date or time format.");
         } catch (Exception e) {
-            System.out.println("reserveClassroom: Error occurred while reserving the classroom. Please try again.");
+            System.out.println("Error occurred while reserving the classroom. Please try again.");
         }
     }
 
@@ -357,7 +363,7 @@ public class ConsoleView {
             String reservationId = scanner.nextLine();
             consoleViewModel.cancelClassroomReservation(reservationId);
         } catch (Exception e) {
-            System.out.println("cancelClassroomReservation: Error occurred while canceling the reservation. Please try again.");
+            System.out.println("Error occurred while canceling the reservation. Please try again.");
         }
     }
 
@@ -367,7 +373,7 @@ public class ConsoleView {
             String reservationId = scanner.nextLine();
             consoleViewModel.cancelOwnClassroomReservation(reservationId, currentUserId);
         } catch (Exception e) {
-            System.out.println("cancelClassroomReservation: Error occurred while canceling the reservation. Please try again.");
+            System.out.println("Error occurred while canceling the reservation. Please try again.");
         }
     }
 
@@ -381,7 +387,7 @@ public class ConsoleView {
                 System.out.println("Reserved Classrooms:" + reservedClassrooms);
             }
         } catch (Exception e) {
-            System.out.println("viewReservedClassrooms: Error occurred while fetching reserved classrooms. Please try again.");
+            System.out.println("Error occurred while fetching reserved classrooms. Please try again.");
         }
     }
 
@@ -442,7 +448,7 @@ public class ConsoleView {
 
             System.out.println("Metrics exported successfully!");
         } catch (Exception e) {
-            System.out.println("exportMetrics: Error occurred while exporting metrics: " + e.getMessage());
+            System.out.println("Error occurred while exporting metrics: " + e.getMessage());
         }
     }
 
@@ -465,7 +471,7 @@ public class ConsoleView {
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter numeric values.");
         } catch (Exception e) {
-            System.out.println("An error occurred while creating the classroom: " + e.getMessage());
+            System.out.println("An error occurred while creating the classroom. Please try again.");
         }
     }
 
