@@ -97,7 +97,8 @@ public class ConsoleViewModel {
             return result;
 
         } catch (Exception e) {
-            System.out.println("reserveClassroom: Error creating reservation: " + e.getMessage());
+            //System.out.println("reserveClassroom: Error creating reservation: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
             return false;
         }
     }
@@ -112,11 +113,12 @@ public class ConsoleViewModel {
             if (success) {
                 System.out.println("Reservation canceled successfully.");
             } else {
-                System.out.println("Failed to cancel reservation.");
+                System.out.println("Failed to cancel reservation. Ask your administrator for help");
             }
 
         } catch (Exception e) {
-            System.out.println("cancelClassroomReservation: Error cancelling reservation: " + e.getMessage());
+            //System.out.println("cancelClassroomReservation: Error cancelling reservation: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
@@ -130,11 +132,12 @@ public class ConsoleViewModel {
             if (success) {
                 System.out.println("Reservation canceled successfully.");
             } else {
-                System.out.println("Failed to cancel reservation. Ask your teacher for help");
+                System.out.println("Failed to cancel reservation. Ask your administrator for help");
             }
 
         } catch (Exception e) {
-            System.out.println("cancelOwnClassroomReservation: Error cancelling reservation: " + e.getMessage());
+            //System.out.println("cancelOwnClassroomReservation: Error cancelling reservation: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
@@ -145,7 +148,8 @@ public class ConsoleViewModel {
             // System.out.println("getReservedClassrooms: Retrieved " + reservations.size() + " reservations");
             return reservations;
         } catch (Exception e) {
-            System.out.println("getReservedClassrooms: Error retrieving reservations: " + e.getMessage());
+            //System.out.println("getReservedClassrooms: Error retrieving reservations: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
             return new ArrayList<>();
         }
     }
@@ -156,7 +160,8 @@ public class ConsoleViewModel {
             ExportMetric.exportTableToCSV("UserTable");
             // System.out.println("exportUserMetrics: User metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportUserMetrics: Failed to export user metrics: " + e.getMessage());
+            //System.out.println("exportUserMetrics: Failed to export user metrics: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
@@ -166,7 +171,8 @@ public class ConsoleViewModel {
             ExportMetric.exportTableToCSV("ClassroomTable");
             // System.out.println("exportClassroomMetrics: Classroom metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportClassroomMetrics: Failed to export classroom metrics: " + e.getMessage());
+            //System.out.println("exportClassroomMetrics: Failed to export classroom metrics: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
@@ -176,7 +182,8 @@ public class ConsoleViewModel {
             ExportMetric.exportTableToCSV("ReservationTable");
             // System.out.println("exportReservationMetrics: Reservation metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportReservationMetrics: Failed to export reservation metrics: " + e.getMessage());
+            //System.out.println("exportReservationMetrics: Failed to export reservation metrics: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
@@ -186,7 +193,8 @@ public class ConsoleViewModel {
             ExportMetric.exportMostDemandedClassrooms();
             // System.out.println("exportMostDemandedClassrooms: Most demanded classrooms metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportMostDemandedClassrooms: Failed to export most demanded classrooms metrics: " + e.getMessage());
+            //System.out.println("exportMostDemandedClassrooms: Failed to export most demanded classrooms metrics: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
@@ -196,7 +204,8 @@ public class ConsoleViewModel {
             ExportMetric.exportPeakHours();
             // System.out.println("exportPeakHours: Peak hours metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportPeakHours: Failed to export peak hours metrics: " + e.getMessage());
+            //System.out.println("exportPeakHours: Failed to export peak hours metrics: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
@@ -206,7 +215,8 @@ public class ConsoleViewModel {
             ExportMetric.exportMostActiveUsers();
             // System.out.println("exportMostActiveUsers: Most active users metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportMostActiveUsers: Failed to export most active users metrics: " + e.getMessage());
+            //System.out.println("exportMostActiveUsers: Failed to export most active users metrics: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
@@ -216,7 +226,8 @@ public class ConsoleViewModel {
             ExportMetric.exportAverageOccupancyTime();
             // System.out.println("exportAverageOccupancyTime: Average occupancy time metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportAverageOccupancyTime: Failed to export average occupancy time metrics: " + e.getMessage());
+            //System.out.println("exportAverageOccupancyTime: Failed to export average occupancy time metrics: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
@@ -226,7 +237,8 @@ public class ConsoleViewModel {
             ExportMetric.exportOccupancyPercentage();
             // System.out.println("exportOccupancyPercentage: Occupancy percentage metrics exported successfully.");
         } catch (Exception e) {
-            System.out.println("exportOccupancyPercentage: Failed to export occupancy percentage metrics: " + e.getMessage());
+            //System.out.println("exportOccupancyPercentage: Failed to export occupancy percentage metrics: " + e.getMessage());
+            System.out.println("Something went wrong, ask your administrator for help");
         }
     }
 
