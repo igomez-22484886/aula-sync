@@ -36,7 +36,7 @@ public class UserDAO {
             // System.out.println("registerUser Rows inserted: " + rows);
 
         } catch (SQLException e) {
-            System.out.println("registerUser SQL Exception: " + e.getMessage());
+            // System.out.println("registerUser SQL Exception: " + e.getMessage());
         }
 
         return result;
@@ -57,7 +57,7 @@ public class UserDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("userExists SQL Exception: " + e.getMessage());
+            // System.out.println("userExists SQL Exception: " + e.getMessage());
         }
         return false;
     }
@@ -77,7 +77,7 @@ public class UserDAO {
             return valid;
 
         } catch (SQLException e) {
-            System.out.println("checkCredentials SQL Exception: " + e.getMessage());
+            // System.out.println("checkCredentials SQL Exception: " + e.getMessage());
         }
         return false;
     }
@@ -109,7 +109,7 @@ public class UserDAO {
                 return exists;
             }
         } catch (SQLException e) {
-            System.out.println("checkInstitutionExists SQL Exception: " + e.getMessage());
+            // System.out.println("checkInstitutionExists SQL Exception: " + e.getMessage());
         }
         return false;
     }
@@ -133,7 +133,7 @@ public class UserDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("getUserIdByEmail SQL Exception: " + e.getMessage());
+            // System.out.println("getUserIdByEmail SQL Exception: " + e.getMessage());
             return null;
         }
     }
@@ -163,7 +163,7 @@ public class UserDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("getUserById SQL Exception: " + e.getMessage());
+            // System.out.println("getUserById SQL Exception: " + e.getMessage());
             return null;
         }
     }

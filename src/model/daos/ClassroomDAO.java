@@ -35,7 +35,7 @@ public class ClassroomDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("insertClassroom SQL Exception: " + e.getMessage());
+          //  System.out.println("insertClassroom SQL Exception: " + e.getMessage());
         }
     }
 
@@ -61,7 +61,7 @@ public class ClassroomDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("getClassroomById SQL Exception: " + e.getMessage());
+          //  System.out.println("getClassroomById SQL Exception: " + e.getMessage());
         }
         return null;
     }
@@ -86,7 +86,7 @@ public class ClassroomDAO {
 
             // System.out.println("getAllClassrooms Total classrooms retrieved: " + classrooms.size());
         } catch (SQLException e) {
-            System.out.println("getAllClassrooms SQL Exception: " + e.getMessage());
+          //  System.out.println("getAllClassrooms SQL Exception: " + e.getMessage());
         }
         return classrooms;
     }
@@ -105,7 +105,7 @@ public class ClassroomDAO {
             // System.out.println("updateClassroom Rows updated: " + updated);
             return updated > 0;
         } catch (SQLException e) {
-            System.out.println("updateClassroom SQL Exception: " + e.getMessage());
+          //  System.out.println("updateClassroom SQL Exception: " + e.getMessage());
             return false;
         }
     }
@@ -123,7 +123,7 @@ public class ClassroomDAO {
             // System.out.println("deleteClassroom Rows deleted: " + deleted);
             return deleted > 0;
         } catch (SQLException e) {
-            System.out.println("deleteClassroom SQL Exception: " + e.getMessage());
+          //  System.out.println("deleteClassroom SQL Exception: " + e.getMessage());
             return false;
         }
     }

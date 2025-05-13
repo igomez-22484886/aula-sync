@@ -39,7 +39,7 @@ public class ReservationDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("getReservationsByUser: SQL error occurred: " + e.getMessage());
+            // System.out.println("getReservationsByUser: SQL error occurred: " + e.getMessage());
         }
 
         return reservations;
@@ -70,7 +70,7 @@ public class ReservationDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("getAvailableClassrooms: SQL error occurred: " + e.getMessage());
+            // System.out.println("getAvailableClassrooms: SQL error occurred: " + e.getMessage());
         }
 
         return classrooms;
@@ -93,7 +93,7 @@ public class ReservationDAO {
 
             User newUser = userDAO.getUserById(String.valueOf(userId));
             if (newUser == null) {
-                // System.out.println("createReservation: User ID " + userId + " not found");
+                // // System.out.println("createReservation: User ID " + userId + " not found");
                 conn.rollback();
                 return false;
             }
@@ -112,7 +112,7 @@ public class ReservationDAO {
 
                     User existingUser = userDAO.getUserById(String.valueOf(existingUserId));
                     if (existingUser == null) {
-                        // System.out.println("createReservation: Existing user ID " + existingUserId + " not found");
+                        // // System.out.println("createReservation: Existing user ID " + existingUserId + " not found");
                         conn.rollback();
                         return false;
                     }
@@ -122,10 +122,10 @@ public class ReservationDAO {
                         try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
                             deleteStmt.setInt(1, existingReservationId);
                             deleteStmt.executeUpdate();
-                            System.out.println("Replaced reservation ID " + existingReservationId + " due to higher priority");
+                            // System.out.println("Replaced reservation ID " + existingReservationId + " due to higher priority");
                         }
                     } else {
-                        System.out.println("Reservation rejected due to lower or equal priority");
+                        // System.out.println("Reservation rejected due to lower or equal priority");
                         conn.rollback();
                         return false;
                     }
@@ -145,7 +145,7 @@ public class ReservationDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("createReservation: SQL error occurred: " + e.getMessage());
+            // System.out.println("createReservation: SQL error occurred: " + e.getMessage());
             return false;
         }
     }
@@ -172,7 +172,7 @@ public class ReservationDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("checkClassroomReservation: SQL error occurred: " + e.getMessage());
+            // System.out.println("checkClassroomReservation: SQL error occurred: " + e.getMessage());
         }
         return false;
     }
@@ -196,7 +196,7 @@ public class ReservationDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("getAllReservations: SQL error occurred: " + e.getMessage());
+            // System.out.println("getAllReservations: SQL error occurred: " + e.getMessage());
         }
 
         return reservations;
@@ -222,7 +222,7 @@ public class ReservationDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("getReservationsByClassroom: SQL error occurred: " + e.getMessage());
+            // System.out.println("getReservationsByClassroom: SQL error occurred: " + e.getMessage());
         }
 
         return reservations;
@@ -255,13 +255,13 @@ public class ReservationDAO {
                 return rowsDeleted > 0;
 
             } catch (SQLException e) {
-                System.out.println("cancelReservation: SQL error occurred, rolling back: " + e.getMessage());
+                // System.out.println("cancelReservation: SQL error occurred, rolling back: " + e.getMessage());
                 conn.rollback();
                 return false;
             }
 
         } catch (SQLException e) {
-            System.out.println("cancelReservation: Database connection error: " + e.getMessage());
+            // System.out.println("cancelReservation: Database connection error: " + e.getMessage());
             return false;
         }
     }
@@ -286,7 +286,7 @@ public class ReservationDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("getClassroomsReservedAt: SQL error occurred: " + e.getMessage());
+            // System.out.println("getClassroomsReservedAt: SQL error occurred: " + e.getMessage());
         }
 
         return reservedClassrooms;
@@ -295,14 +295,12 @@ public class ReservationDAO {
     public boolean cancelOwnReservation(int reservationId, String userId) {
         String getReservationSql = "SELECT ClassroomId, UserId FROM ReservationTable WHERE ReservationId = ?";
         String deleteSql = "DELETE FROM ReservationTable WHERE ReservationId = ?";
-        String updateStatusSql = "UPDATE ClassroomTable SET Status = 'Available' WHERE ClassroomId = ?";
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
             conn.setAutoCommit(false);
 
             try (PreparedStatement getStmt = conn.prepareStatement(getReservationSql);
-                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
-                 PreparedStatement updateStmt = conn.prepareStatement(updateStatusSql)) {
+                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);) {
 
                 getStmt.setInt(1, reservationId);
                 ResultSet rs = getStmt.executeQuery();
@@ -323,24 +321,21 @@ public class ReservationDAO {
                 deleteStmt.setInt(1, reservationId);
                 int rowsDeleted = deleteStmt.executeUpdate();
 
-                updateStmt.setInt(1, classroomId);
-                updateStmt.executeUpdate();
-
                 conn.commit();
                 return rowsDeleted > 0;
 
             } catch (SQLException e) {
-                System.out.println("cancelOwnReservation: SQL error occurred, rolling back: " + e.getMessage());
+                // System.out.println("cancelOwnReservation: SQL error occurred, rolling back: " + e.getMessage());
                 conn.rollback();
                 return false;
             } catch (NumberFormatException e) {
-                System.out.println("cancelOwnReservation: Invalid user ID format: " + userId);
+                // System.out.println("cancelOwnReservation: Invalid user ID format: " + userId);
                 conn.rollback();
                 return false;
             }
 
         } catch (SQLException e) {
-            System.out.println("cancelOwnReservation: Database connection error: " + e.getMessage());
+            // System.out.println("cancelOwnReservation: Database connection error: " + e.getMessage());
             return false;
         }
     }
