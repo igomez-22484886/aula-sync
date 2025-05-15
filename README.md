@@ -1,6 +1,6 @@
 🚀 Engineering Project - Contribution Guidelines
 
-Welcome to the Engineering Project! To maintain code quality and collaboration, please follow these contribution guidelines.
+Welcome to the Aula-Sync Project! To maintain code quality and collaboration, please follow these contribution guidelines.
 
 📌 Git Commit Rules
 
